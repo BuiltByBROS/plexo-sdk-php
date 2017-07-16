@@ -1,0 +1,14 @@
+{
+  "name": "plexouy/sdk",
+  "type": "library",
+  "license": "GNU AGPL",
+  "minimum-stability": "dev",
+  "autoload": {
+    "psr-4": {
+      "Plexo\\Sdk\\": "src"
+    }
+  },
+  "require": {
+    "symfony/validator": "3.4.x-dev"
+  }
+}
