@@ -34,15 +34,13 @@ try {
         'MetaReference' => '123456',
         'RedirectUri' => 'http://www.sitiocliente.com/plexo/XXX/YYY',
     ]);
+    var_dump($response);
+    /*
+     * string(32) "0e22e728c74046ce9353736c2c5bbe0b"
+     */
 } catch (Sdk\Exception\PlexoException $exc) {
     printf("[%s] (%d) %s\n", get_class($exc), $exc->getCode(), $exc->getMessage());
 }
-
-var_dump($response);
-/*
- * string(32) "0e22e728c74046ce9353736c2c5bbe0b"
- */
-
 ```
 
 ## Credenciales
