@@ -25,7 +25,7 @@ require_once 'vendor/autoload.php';
 use Plexo\Sdk;
 use Plexo\Sdk\Type;
 
-$client = new Sdk\Client('Nombre-Cliente');
+$client = new Sdk\Client();
 
 try {
     $response = $client->Authorize([
@@ -34,25 +34,61 @@ try {
         'MetaReference' => '123456',
         'RedirectUri' => 'http://www.sitiocliente.com/plexo/XXX/YYY',
     ]);
-} catch (Sdk\Exception\PlexoException $e) {
-    echo "Ha ocurrido un error en la petición.\n";
+} catch (Sdk\Exception\PlexoException $exc) {
+    printf("[%s] (%d) %s\n", get_class($exc), $exc->getCode(), $exc->getMessage());
 }
 
 var_dump($response);
 /*
- * object(stdClass)#19 (2) {
- *     ["Response"]=> string(32) "2a2f362fb03347aab81ec2ea0fd588c8"
- *     ["ResultCode"]=> int(0)
- * }
+ * string(32) "0e22e728c74046ce9353736c2c5bbe0b"
  */
 
 ```
 
+## Credenciales
+
+La autenticación se realiza a través un nombre de usuario y verificación de firmas. Todas las peticiones son firmadas utilizando una clave privada emitida por Plexo.
+
+El SDK utiliza las siguientes variables de entorno para la autenticación:
+
+  * PLEXO_CREDENTIALS_CLIENT
+  * PLEXO_CREDENTIALS_PFX_FILENAME
+  * PLEXO_CREDENTIALS_PFX_PASSPHRASE
+
+Si lo prefiere, en lugar de utilizar variables de entorno, puede indicar los datos de autenticación en el código:
+
+```php
+<?php
+// Require the Composer autoloader.
+require_once 'vendor/autoload.php';
+
+use Plexo\Sdk;
+
+$client = new Sdk\Client([
+    'client' => 'Nombre_Cliente',
+    'pfx_filename' => '~/certs/nombrecliente.pfx',
+    'pfx_passphrase' => 'demotest',
+]);
+```
+
 ## Clase Plexo\\Sdk\\Client
 
-Existen tres métodos de interacción. Todos serán realizados desde el servidor y WEB o aplicación del comercio.
+### Sinopsis de la Clase
+
+```
+Plexo\Sdk\Client {
+    public __construct ( [ array $options ] )
+    public string Authorize ( array $auth )
+    public type GetSupportedIssuers( )
+    public type Purchase ( array $payment )
+    public type Cancel ( array $cancel )
+    public array GetServerPublicKey ( string $fingerprint )
+}
+```
 
 ### Métodos
+
+Existen tres métodos de interacción. Todos serán realizados desde el servidor y WEB o aplicación del comercio.
 
 #### Autorización
 
@@ -88,7 +124,7 @@ public *\\stdClass* **Plexo\\Sdk\\Client::Authorize** ( *array* $auth )
     * BilledAmount : monto total de la compra
     * InvoiceNumber: número de factura
     * TaxedAmount : monto de la compra que tiene impuestos
-    * Type: tipo de Ley que aplica: 0-No aplica, 1-Ley 17934, 6-Ley 19210.
+    * Type: tipo de Ley que aplica: 0: No aplica, 1: Ley 17934, 6: Ley 19210.
   * **Installments** (int) Cantidad de cuotas
   * **Items** (List<Item>) Es una lista con los ítems de la compra, que contiene los siguientes campos:
     * Amount : monto del item
