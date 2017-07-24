@@ -4,3 +4,5 @@ index1.php
 /test/
 /src/PaymentGatewayClient.php
 /src/PaymentGatewayClientFactory.php
+/src/Certificate/CertificateHelper.php
+/src/Certificate/CertificateHelperFactory.php
