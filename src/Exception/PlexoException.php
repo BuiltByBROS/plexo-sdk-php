@@ -1,4 +1,4 @@
 <?php
 namespace Plexo\Sdk\Exception;
 
-interface PlexoException {}
+class PlexoException extends \Exception {}

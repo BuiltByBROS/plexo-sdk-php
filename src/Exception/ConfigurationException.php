@@ -2,7 +2,7 @@
 
 namespace Plexo\Client\Exceptions;
 
-class ConfigurationException extends \Exception implements \Plexo\Sdk\Exception\PlexoException
+class ConfigurationException extends \Plexo\Sdk\Exception\PlexoException
 {
     public function __construct($message)
     {
