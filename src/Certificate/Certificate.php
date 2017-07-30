@@ -36,15 +36,17 @@ class Certificate {
         if (!openssl_pkcs12_read(file_get_contents($filename), $certs, $passphrase)) {
             throw new \Plexo\Sdk\Exception\CertificateException(sprintf('No fue posible leer el certificado del archivo %s.', $filename), \Plexo\Sdk\ResultCode::SYSTEM_ERROR);
         }
-        return new self($certs['cert'], $certs['pkey']);
+        $x509 = openssl_x509_read($certs['cert']);
+        $fingerprint = openssl_x509_fingerprint($x509, 'sha1');
+        return new self($certs['cert'], $certs['pkey'], $fingerprint);
     }
     
-    public function getFingerprint($name)
-    {
-        if ($name === 'fingerprint' && is_null($this->fingerprint) && $this->cert) {
-            $x509 = openssl_x509_read($this->cert);
-            $this->fingerprint = openssl_x509_fingerprint($x509, 'sha1');
-        }
-        return $this->{$name};
-    }
+//    public function getFingerprint($name)
+//    {
+//        if ($name === 'fingerprint' && is_null($this->fingerprint) && $this->cert) {
+//            $x509 = openssl_x509_read($this->cert);
+//            $this->fingerprint = openssl_x509_fingerprint($x509, 'sha1');
+//        }
+//        return $this->{$name};
+//    }
 }

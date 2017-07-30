@@ -148,14 +148,11 @@ class Authorization extends Sdk\Message
     
     public function toArray()
     {
-        $scheme = self::getValidationMetadata();
-        return array_filter($this->data, function ($v, $k) use ($scheme) {
-//            var_dump($v, $k, $scheme[$k]);
-            return ($scheme[$k]['required'] && !is_null($v));
-        }, ARRAY_FILTER_USE_BOTH);
-//        print_r(array_map(function ($v, $k) use ($scheme) {
-//            var_dump($v, $k, $scheme);
-//            return true;
-//        }, $this->data));
+//        $scheme = self::getValidationMetadata();
+        $data = [
+            'Client' => 'Sodexo',//FIXME
+            'Request' => $this->to_array(),
+        ];
+        return $data;
     }
 }

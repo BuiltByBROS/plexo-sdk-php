@@ -1,14 +1,24 @@
 <?php
 namespace Plexo\Sdk\Utilities\functions;
 
-function ksortRecursive(&$array, $sort_flags = SORT_REGULAR)
+function array_filter_recursive($input, $callback = null)
+{
+    foreach ($input as &$value) {
+        if (is_array($value)) {
+            $value = array_filter_recursive($value);
+        }
+    }
+    return array_filter($input);
+}
+
+function ksortRecursive(&$array)
 {
     if (!is_array($array)) {
         return false;
     }
-    ksort($array, $sort_flags);
+    ksort($array, SORT_REGULAR);
     foreach ($array as &$arr) {
-        ksortRecursive($arr, $sort_flags);
+        ksortRecursive($arr);
     }
     return true;
 }
