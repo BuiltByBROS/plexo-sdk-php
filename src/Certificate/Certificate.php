@@ -7,31 +7,44 @@ class Certificate {
     public $pkey;
     
     /**
-     * 
-     * @param string $fingerprint
+     *
      * @param string $cert
      * @param string $pkey
+     * @param string $fingerprint
      */
-    public function __construct($fingerprint, $cert, $pkey = null)
+    public function __construct($cert = null, $pkey = null, $fingerprint = null)
     {
-        $this->fingerprint = strtoupper($fingerprint);
         $this->cert = $cert;
         $this->pkey = $pkey;
+        $this->fingerprint = is_string($fingerprint) ? strtoupper($fingerprint) : null;
     }
 
-    public static function fromKey($fingerprint, $key)
+    public static function fromServerPublicKey($key, $fingerprint = null)
     {
         $cert = sprintf("-----BEGIN CERTIFICATE-----\n%s\n-----END CERTIFICATE-----\n", trim(chunk_split($key, 64, "\n")));
-        return new self($fingerprint, $cert);
+        return new self($cert, $fingerprint);
     }
     
     public static function fromPfxFile($filename, $passphrase)
     {
-        if (!openssl_pkcs12_read(file_get_contents($filename), $certs, $passphrase)) {
-            throw new \Plexo\Sdk\Exception\CertificateException('No fue posible abrir el certificado.');
+        if (!file_exists($filename)) {
+            throw new \Plexo\Sdk\Exception\CertificateException(sprintf('No existe el archivo %s.', $filename), \Plexo\Sdk\ResultCode::SYSTEM_ERROR);
         }
-        $x509 = openssl_x509_read($certs['cert']);
-        $fingerprint = openssl_x509_fingerprint($x509, 'sha1');
-        return new self($fingerprint, $certs['cert'], $certs['pkey']);
+        if (!is_readable($filename)) {
+            throw new \Plexo\Sdk\Exception\CertificateException(sprintf('El archivo %s no puede ser abierto para lectura.', $filename), \Plexo\Sdk\ResultCode::SYSTEM_ERROR);
+        }
+        if (!openssl_pkcs12_read(file_get_contents($filename), $certs, $passphrase)) {
+            throw new \Plexo\Sdk\Exception\CertificateException(sprintf('No fue posible leer el certificado del archivo %s.', $filename), \Plexo\Sdk\ResultCode::SYSTEM_ERROR);
+        }
+        return new self($certs['cert'], $certs['pkey']);
+    }
+    
+    public function getFingerprint($name)
+    {
+        if ($name === 'fingerprint' && is_null($this->fingerprint) && $this->cert) {
+            $x509 = openssl_x509_read($this->cert);
+            $this->fingerprint = openssl_x509_fingerprint($x509, 'sha1');
+        }
+        return $this->{$name};
     }
 }

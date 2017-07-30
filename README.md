@@ -69,6 +69,10 @@ $client = new Sdk\Client([
 ]);
 ```
 
+## Certificados
+
+> Plexo\Sdk\Certificate\CertificateStoreInterface
+
 ## Clase Plexo\\Sdk\\Client
 
 ### Sinopsis de la Clase
@@ -139,4 +143,4 @@ obteniendo como resultado una sesión de usuario.
   
 ### GetServerPublicKey
 
-> public *array* Plexo\\Sdk\\Client::GetServerPublicKey ( *string* $fingerprint)
+> public *array* Plexo\\Sdk\\Client::GetServerPublicKey ( *string* $fingerprint )

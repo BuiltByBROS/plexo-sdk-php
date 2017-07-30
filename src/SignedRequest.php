@@ -10,10 +10,24 @@ class SignedRequest
 
     private $clientName;
 
-    public function __construct(Message $message)
+    /**
+     * 
+     * @param (Message|string) $message
+     */
+    public function __construct($message)
     {
+        if (is_string($message)) {
+            $this->createFromString($message);
+        }
         $this->message = $message;
         $this->clientName = 'Sodexo';//FIXME
+    }
+    
+    protected function createFromString($message)
+    {
+        $arr = json_decode($message, true);
+        $this->fingerprint = $arr['Object']['Fingerprint'];
+        $this->message = $arr['Object']['Fingerprint'];
     }
 
     public function to_array()

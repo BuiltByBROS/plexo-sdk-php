@@ -10,7 +10,7 @@ class Client implements SecurePaymentGatewayInterface
     const PROD_URI = 'http://testing.plexo.com.uy/plexoapi/SecurePaymentGateway.svc/';
 
     /**
-     * 
+     *
      * @param array $options
      */
     public function __construct(array $options = null)
@@ -25,7 +25,7 @@ class Client implements SecurePaymentGatewayInterface
     }
 
     /**
-     * 
+     *
      * @param (array|\Plexo\Sdk\Message\Authorization) $auth
      * @return \stdClass
      * @throws \Exception
@@ -47,7 +47,7 @@ class Client implements SecurePaymentGatewayInterface
     }
 
     /**
-     * 
+     *
      * @param (array|\Plexo\Sdk\Message\PaymentRequest) $payment
      * @return \stdClass
      */
@@ -64,12 +64,12 @@ class Client implements SecurePaymentGatewayInterface
 
     public function Cancel($payment)
     {
-        //Message\CancelRequest 
+        //Message\CancelRequest
         return $this->_exec('POST', 'Operation/Cancel', $payment);
     }
     
     /**
-     * 
+     *
      * @param string $fingerprint
      * @return array Server response
      */
@@ -80,7 +80,7 @@ class Client implements SecurePaymentGatewayInterface
     }
 
     /**
-     * 
+     *
      * @param string $http_method
      * @param string $path
      * @param Sdk\Message $message
@@ -90,6 +90,7 @@ class Client implements SecurePaymentGatewayInterface
      */
     private function _exec($http_method, $path, $message = null)
     {
+echo __METHOD__."\n";
         $options = array();
         if ($message) {
             $errors = $message->validate($message);
@@ -117,18 +118,23 @@ class Client implements SecurePaymentGatewayInterface
         $body = (string) $res->getBody();
         $response_obj = json_decode($body, true);
 
-        $certificateStore = Certificate\CertificateStore::instance();
+        $certificateStore = Registry::contains('CertificateProvider')
+            ? Registry::get('CertificateProvider')
+            : Certificate\CertificateProvider::instance();
+        if (!($certificateStore instanceof Certificate\CertificateProviderInterface)) {
+            throw new Exception\PlexoException(sprintf('%s debe implementar la interfaz Plexo\Sdk\Certificate\CertificateProviderInterface.', get_class($certificateStore)));
+        }
         if (preg_match('/^Key\/([A-Z0-9]{40})$/', $path, $matches)) {
             if ($response_obj['Object']['Object']['Response']['Fingerprint'] === $matches[1]) {
-                $certificateStore->save(Certificate\Certificate::fromKey($matches[1], $response_obj['Object']['Object']['Response']['Key']));
+                $certificateStore->save(Certificate\Certificate::fromServerPublicKey($response_obj['Object']['Object']['Response']['Key']));
             }
         }
         $signedResponse = new SignedResponse($response_obj);
         $fingerprint = $signedResponse->getFingerprint();
-        if (!$certificateStore->get($fingerprint)) {
+        if (!$certificateStore->getByFingerprint($fingerprint)) {
             $this->GetServerPublicKey($fingerprint);
         }
-        $signedResponse->verify($certificateStore->get($fingerprint));
+        $signedResponse->verify($certificateStore->getByFingerprint($fingerprint));
         if ($response_obj['Object']['Object']['ResultCode'] !== 0) {
             throw new Exception\ResultCodeException($response_obj['Object']['Object']['ErrorMessage'], $response_obj['Object']['Object']['ResultCode']);
         }

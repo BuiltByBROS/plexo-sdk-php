@@ -21,7 +21,6 @@ class Registry
     * @throws Exception
     */
     static public function add($object, $name = null) {
-        // Usa el classname si no se define un nombre, simula singleton
         $name = ($name && is_string($name)) ? $name : get_class($object);
         if (isset(self::$_store[$name])) {
             throw new Exception("El objeto ya existe en el registro.");
@@ -36,14 +35,9 @@ class Registry
     * @return mixed
     * @throws Exception
     */
-    static public function get($name, $factory = false) {
-        if(!self::contains($name)) {
-//            if($factory) {
-//                $class = str_replace('_', DIRECTORY_SEPARATOR, $name);
-//                require_once(LIB_DIR.DIRECTORY_SEPARATOR.$class.'.php');
-//                new $name();
-//            }
-            throw new Exception("El objeto no existe en el registro.");
+    static public function get($name) {
+        if (!self::contains($name)) {
+            throw new Exception\Exception("El objeto no existe en el registro.");
         }
         return self::$_store[$name];
     }
@@ -55,7 +49,7 @@ class Registry
     * @return bool
     */
     static public function contains($name) {
-        if(array_key_exists($name, self::$_store) && self::$_store[$name]) {
+        if (array_key_exists($name, self::$_store) && self::$_store[$name]) {
             return true;
         }
         else {

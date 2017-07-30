@@ -1,7 +1,6 @@
 /vendor/
 index.php
 index1.php
-/test/
 /src/PaymentGatewayClient.php
 /src/PaymentGatewayClientFactory.php
 /src/Certificate/CertificateHelper.php
@@ -9,3 +8,4 @@ index1.php
 .env
 LICENSE
 mensajes/
+/tests/CertificateTest.php
