@@ -90,7 +90,6 @@ class Client implements SecurePaymentGatewayInterface
      */
     private function _exec($http_method, $path, $message = null)
     {
-echo __METHOD__."\n";
         $options = array();
         if ($message) {
             $errors = $message->validate($message);
@@ -100,13 +99,13 @@ echo __METHOD__."\n";
 //                }
 //            }
             $signedRequest = new SignedRequest($message);
-            $signedRequest->sign();
-            $req = $signedRequest->to_array();
+            $cert = Certificate\Certificate::fromPfxFile($_ENV['PLEXO_CREDENTIALS_PFX_FILENAME'], $_ENV['PLEXO_CREDENTIALS_PFX_PASSPHRASE']);
+            $signedRequest->sign($cert);
             $options = [
                 'headers' => [
                     'Content-Type' => 'application/json; charset=UTF-8',
                 ],
-                'json' => $req,
+                'json' => $signedRequest->toArray(),
             ];
 //printf("< %s\n", json_encode($req));
         }
@@ -129,7 +128,7 @@ echo __METHOD__."\n";
                 $certificateStore->save(Certificate\Certificate::fromServerPublicKey($response_obj['Object']['Object']['Response']['Key']));
             }
         }
-        $signedResponse = new SignedResponse($response_obj);
+        $signedResponse = new SignedResponse($response_obj['Object']['Object'], $response_obj['Object']['Fingerprint'], $response_obj['Object']['UTCUnixTimeExpiration'], $response_obj['Signature']);
         $fingerprint = $signedResponse->getFingerprint();
         if (!$certificateStore->getByFingerprint($fingerprint)) {
             $this->GetServerPublicKey($fingerprint);
@@ -138,6 +137,6 @@ echo __METHOD__."\n";
         if ($response_obj['Object']['Object']['ResultCode'] !== 0) {
             throw new Exception\ResultCodeException($response_obj['Object']['Object']['ErrorMessage'], $response_obj['Object']['Object']['ResultCode']);
         }
-        return $signedResponse->getResponse();
+        return $signedResponse->getMessage();
     }
 }

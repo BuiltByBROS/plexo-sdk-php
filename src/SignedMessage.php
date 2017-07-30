@@ -74,6 +74,11 @@ var_dump($object, $fingerprint, $utcUnixTimeExpiration, $signature);
         return $arr;
     }
 
+    public function getMessage()
+    {
+        return $this->object;
+    }
+
     public function getSignatureBaseString()
     {
         $message = $this->toArray();
@@ -102,6 +107,21 @@ var_dump($object, $fingerprint, $utcUnixTimeExpiration, $signature);
         return openssl_verify($base_string, base64_decode($this->signature), $cert->cert, OPENSSL_ALGO_SHA512);
     }
 
+    public function isValidExpirationTime()
+    {
+        return ($this->utcUnixTimeExpiration >= time());
+    }
+
+    public function validate($cert)
+    {
+        if (!$this->isValidExpirationTime()) {
+            throw new Exception\ResultCodeException('El mensaje ha expirado', ResultCode::MESSAGE_EXPIRED);
+        }
+        if (!$this->verify($cert)) {
+            throw new Exception\SignatureException('Firma inválida', ResultCode::INVALID_SIGNATURE);
+        }
+    }
+    
     public function __toString()
     {
         return str_replace('\/', '/', json_encode($this->toArray()));

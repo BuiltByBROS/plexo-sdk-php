@@ -11,23 +11,23 @@ class SignedResponse extends SignedMessage
      * 
      * @param (string|array|\Plexo\Sdk\Exception\PlexoException) $response
      */
-    public function __construct($response)
-    {
-        $this->object = $response;
-//        $this->ResultCode = $response['Object']['Object']['ResultCode'];
-//        if ($this->ResultCode === 0) {
-//            $this->Response = $response['Object']['Object']['Response'];
-//        } else {
-//            $this->ErrorMessage = $response['Object']['Object']['ErrorMessage'];
-//        }
-//        $this->signature = $response['Signature'];
-//        $this->fingerprint = $response['Object']['Fingerprint'];
-//        $this->utcUnixTimeExpiration = $response['Object']['UTCUnixTimeExpiration'];
-    }
+//    public function __construct($response)
+//    {
+//        $this->object = $response;
+////        $this->ResultCode = $response['Object']['Object']['ResultCode'];
+////        if ($this->ResultCode === 0) {
+////            $this->Response = $response['Object']['Object']['Response'];
+////        } else {
+////            $this->ErrorMessage = $response['Object']['Object']['ErrorMessage'];
+////        }
+////        $this->signature = $response['Signature'];
+////        $this->fingerprint = $response['Object']['Fingerprint'];
+////        $this->utcUnixTimeExpiration = $response['Object']['UTCUnixTimeExpiration'];
+//    }
     
     public function getFingerprint()
     {
-        return $this->Fingerprint;
+        return $this->fingerprint;
     }
     
     public function getResponse()
