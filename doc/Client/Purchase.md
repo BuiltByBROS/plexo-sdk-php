@@ -2,6 +2,8 @@
 
 > public *\\stdClass* **Plexo\\Sdk\\Client::Purchase** ( *array* $payment )
 
+## Parámetros
+
   * **ClientReferenceId** (string)
   * **CurrencyId** (int) Código de moneda de la compra. Una de las constantes de *Plexo\\Sdk\\Type\\CurrencyType*:
     * UYU (Peso uruguayo)
