@@ -20,8 +20,7 @@ $response = $client->GetSupportedIssuers();
 print_r($response);
 ```
 
-### Imprime
-
+**Imprime**
 ```
 Array
 (

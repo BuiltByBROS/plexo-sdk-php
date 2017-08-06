@@ -7,6 +7,11 @@ complejidad asociada a la integración con los medios de pago.
 
 Para correr el SDK, su sistema debe contar con **PHP >= 5.6** compilado con el módulo openssl.
 
+## Primeros pasos
+
+* Obtener nombre de usuario y certificado emitido por Plexo.
+* Instalar el SDK.
+
 ## Instalación
 
 La manera recomendada de instalar el SDK es a través de Composer.
@@ -15,6 +20,14 @@ La manera recomendada de instalar el SDK es a través de Composer.
 $ composer require plexouy/plexo-sdk
 ```
 
+## Certificados
+
+El cliente puede desarrollar y registrar su propia clase de almacenamiento de certificados. Esta clase debe implementar la interfaz *[Plexo\\Sdk\\Certificate\\CertificateStoreInterface](../src/Certificate/CertificateProviderInterface.php)*.
+
+De esta manera se evitará la realización de peticiones adicionales a la API, dándole al cliente la libertad de optar por el modo y lugar de almacenamiento más conveniente para él (base de datos, sistema de archivos, APIs, etc).
+
+[Ver ejemplo](doc/CertificateProvider/example.md)
+
 ## Credenciales
 
 La autenticación se realiza a través un nombre de usuario y verificación de firmas. Todas las peticiones son firmadas utilizando una clave privada emitida por Plexo.
@@ -22,6 +35,9 @@ La autenticación se realiza a través un nombre de usuario y verificación de f
 El SDK utiliza las siguientes variables de entorno para la autenticación:
 
   * PLEXO_CREDENTIALS_CLIENT
+  * PLEXO_CREDENTIALS_PRIVKEY
+  * PLEXO_CREDENTIALS_PRIVKEY_FINGERPRINT
+  
   * PLEXO_CREDENTIALS_PFX_FILENAME
   * PLEXO_CREDENTIALS_PFX_PASSPHRASE
 
@@ -36,14 +52,12 @@ use Plexo\Sdk;
 
 $client = new Sdk\Client([
     'client' => 'Nombre_Cliente',
-    'pfx_filename' => '~/certs/nombrecliente.pfx',
-    'pfx_passphrase' => 'demotest',
+    'privkey' => [
+        'pfx_filename' => '~/certs/nombrecliente.pfx',
+        'pfx_passphrase' => 'demotest',
+    ],
 ]);
 ```
-
-## Certificados
-
-> Plexo\\Sdk\\Certificate\\CertificateStoreInterface
 
 ## Clase Plexo\\Sdk\\Client
 

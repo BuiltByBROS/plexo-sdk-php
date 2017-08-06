@@ -2,6 +2,14 @@
 
 > public *array* **Plexo\\Sdk\\Client::GetServerPublicKey** ( *string* $fingerprint )
 
+## Parámetros
+
+**$fingerprint** (string) Fingerprint del certificado que se desea obtener.
+
+## Valores devueltos
+
+(array)
+
 ## Ejemplo
 
 ```php
