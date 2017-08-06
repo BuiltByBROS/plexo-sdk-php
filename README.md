@@ -22,7 +22,7 @@ $ composer require plexouy/plexo-sdk
 
 ## Certificados
 
-El cliente puede desarrollar y registrar su propia clase de almacenamiento de certificados. Esta clase debe implementar la interfaz *[Plexo\\Sdk\\Certificate\\CertificateStoreInterface](../src/Certificate/CertificateProviderInterface.php)*.
+El cliente puede desarrollar y registrar su propia clase de almacenamiento de certificados. Esta clase debe implementar la interfaz *[Plexo\\Sdk\\Certificate\\CertificateStoreInterface](src/Certificate/CertificateProviderInterface.php)*.
 
 De esta manera se evitará la realización de peticiones adicionales a la API, dándole al cliente la libertad de optar por el modo y lugar de almacenamiento más conveniente para él (base de datos, sistema de archivos, APIs, etc).
 
