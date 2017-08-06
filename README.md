@@ -10,11 +10,13 @@ Para correr el SDK, su sistema debe contar con **PHP >= 5.6** compilado con el m
 ## Primeros pasos
 
 * Obtener nombre de usuario y certificado emitido por Plexo.
-* Instalar el SDK.
+* [Instalar el SDK](#instalación).
+* [Definir almacenamiento de certificados](#certificados).
+* [Fijar credenciales](#).
 
 ## Instalación
 
-La manera recomendada de instalar el SDK es a través de Composer.
+Instalando el SDK vía Composer.
 
 ```bash
 $ composer require plexouy/plexo-sdk
@@ -28,20 +30,64 @@ De esta manera se evitará la realización de peticiones adicionales a la API, d
 
 [Ver ejemplo](doc/CertificateProvider/example.md)
 
+### La clase Plexo\\Sdk\\Certificate\\Certificate
+
+Representa un certificado, conteniendo su fingerprint, clave pública y/o clave privada.
+
+* **fingerprint** (string) SHA1 en hexadecimal.
+* **cert** (string) Clave pública en Base 64, conteniendo las declaraciones "-----BEGIN CERTIFICATE-----" y "-----END CERTIFICATE-----".
+* **pkey**  (string) Clave privada en Base 64, conteniendo las declaraciones "-----BEGIN PRIVATE KEY-----" y "END PRIVATE KEY".
+
 ## Credenciales
 
-La autenticación se realiza a través un nombre de usuario y verificación de firmas. Todas las peticiones son firmadas utilizando una clave privada emitida por Plexo.
+La autenticación se realiza a través de un nombre de usuario y verificación de firmas. Todas las peticiones son firmadas utilizando una clave privada emitida por Plexo.
 
-El SDK utiliza las siguientes variables de entorno para la autenticación:
+**Nombre de usuario**
 
-  * PLEXO_CREDENTIALS_CLIENT
-  * PLEXO_CREDENTIALS_PRIVKEY
-  * PLEXO_CREDENTIALS_PRIVKEY_FINGERPRINT
-  
-  * PLEXO_CREDENTIALS_PFX_FILENAME
-  * PLEXO_CREDENTIALS_PFX_PASSPHRASE
+El nombre de usuario puede ser configurado fijando la variable de entorno *PLEXO_CREDENTIALS_CLIENT* o indicado en el código al instanciar la clase *Plexo\\Sdk\\Client* con la opción *client*.
 
-Si lo prefiere, en lugar de utilizar variables de entorno, puede indicar los datos de autenticación en el código:
+**Clave privada**
+
+La configuración de la clave privada puede realizarse de las siguientes tres maneras, tanto como variables de entorno o en el código al instanciar la clase *Plexo\\Sdk\\Client*:
+
+**Opción 1. Fingerprint**: Si ha registrado su clase de almacenamiento de certificados, el SDK consultará el método *getByFingerprint*, pasando como parámetro el fingerprint, para obtener la clave privada almacenada. Su clase debe retornar un objeto del tipo *Plexo\\Sdk\\Certificate\\Certificate* conteniendo la clave privada extraída del archivo pfx.
+
+* Variable de entorno:
+    * *PLEXO_CREDENTIALS_PRIVKEY_FINGERPRINT*
+* Opción del constructor:
+    * *privkey_fingerprint*
+
+**Opción 2. PEM/Fingerprint**: Si la clave privada fue extraída del archivo pfx a un archivo pem, agregue la ruta del archivo pem y el SDK utilizará clave contenida.
+
+* Variables de entorno:
+    * *PLEXO_CREDENTIALS_PEM_FILENAME*
+    * *PLEXO_CREDENTIALS_PRIVKEY_FINGERPRINT*
+* Opción del constructor:
+    * *pem_filename*
+    * *privkey_fingerprint*
+
+**Opcion 3. PFX/Passphase** (más lento): Si no ha extraído los datos del archivo pfx, puede indicar la ruta a ese archivo y su contraseña de instalación.
+
+* Variables de entorno:
+    * *PLEXO_CREDENTIALS_PFX_FILENAME*
+    * *PLEXO_CREDENTIALS_PFX_PASSPHRASE*
+* Opción del constructor:
+    * *pfx_filename*
+    * *pfx_passphrase*
+
+##### Ejemplo: Utilizando variables de entorno.
+
+```php
+<?php
+// Require the Composer autoloader.
+require_once 'vendor/autoload.php';
+
+use Plexo\Sdk;
+
+$client = new Sdk\Client();
+```
+
+##### Ejemplo: Indicando credenciales al instanciar *Client*.
 
 ```php
 <?php
@@ -51,11 +97,9 @@ require_once 'vendor/autoload.php';
 use Plexo\Sdk;
 
 $client = new Sdk\Client([
-    'client' => 'Nombre_Cliente',
-    'privkey' => [
-        'pfx_filename' => '~/certs/nombrecliente.pfx',
-        'pfx_passphrase' => 'demotest',
-    ],
+    'client' => $client_name,
+    'pem_filename' => $pem_filename,
+    'privkey_fingerprint' => $fingerprint,
 ]);
 ```
 

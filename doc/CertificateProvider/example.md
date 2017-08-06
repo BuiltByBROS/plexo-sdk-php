@@ -3,6 +3,10 @@
 ## Ejemplo
 
 ```php
+<?php
+// Require the Composer autoloader.
+require_once 'vendor/autoload.php';
+
 use Plexo\Sdk;
 
 /**
@@ -14,7 +18,7 @@ class MyStore implements Sdk\Certificate\CertificateProviderInterface
      
     public function __construct()
     {
-        $this->db = new PDO('mysql:dbname=plexo;host=localhost', 'plexo', 'plexo');
+        $this->db = new PDO('mysql:dbname=schema;host=localhost', 'user', 'pass');
         $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
 
