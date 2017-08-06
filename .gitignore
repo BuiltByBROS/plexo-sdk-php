@@ -1,3 +1,11 @@
 /vendor/
 index.php
 index1.php
+/src/PaymentGatewayClient.php
+/src/PaymentGatewayClientFactory.php
+/src/Certificate/CertificateHelper.php
+/src/Certificate/CertificateHelperFactory.php
+.env
+LICENSE
+mensajes/
+/tests/CertificateTest.php
