@@ -8,12 +8,14 @@ function array_filter_recursive($input, $callback = null)
             $value = array_filter_recursive($value);
         }
     }
-    return array_filter($input);
+    return array_filter($input, function ($v) {
+        return !is_null($v);
+    });
 }
 
 function ksortRecursive(&$array)
 {
-    if (!is_array($array)) {
+    if (!is_array($array) || key($array) === 0) {
         return false;
     }
     ksort($array, SORT_REGULAR);

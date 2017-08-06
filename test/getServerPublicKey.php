@@ -12,6 +12,8 @@ $client = new Sdk\Client();
 $response = $client->GetServerPublicKey('AEA4D5C586983A140F8B566EA81901E8BD8F8C9F');
 
 $cert = Sdk\Certificate\Certificate::fromServerPublicKey($response['Key'], $response['Fingerprint']);
-var_dump($response, $cert);
+//var_dump($response, $cert);
+var_dump($cert);
+print_r($cert);
 
 ?>

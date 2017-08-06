@@ -18,7 +18,6 @@ abstract class Message implements MessageInterface
         $scheme = call_user_func(array(get_called_class(), 'getValidationMetadata'));
         $errors = [];
         foreach ($scheme as $key => $val) {
-//            var_dump($key, $val, $this->data[$key]);
             if ($val['required'] && empty($this->data[$key])) {
                 array_push($errors, new \ErrorException(sprintf('%s cannot be empty', $key)));
             } elseif (!is_null($this->data[$key]) && !call_user_func('is_' . $val['type'], $this->data[$key])) {
@@ -26,17 +25,6 @@ abstract class Message implements MessageInterface
             }
         }
         return count($errors) ? $errors : false;
-//var_dump(
-//        array_filter($this->data, function ($item) use ($scheme) {
-//            var_dump('filter', $item);
-//            return true;
-//        })
-//);
-//return;
-//        $validator = Validation::createValidatorBuilder()
-//            ->addMethodMapping('loadValidatorMetadata')
-//            ->getValidator();
-//        return $validator->validate($this);
     }
     
     protected function load($data)

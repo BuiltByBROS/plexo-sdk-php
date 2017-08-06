@@ -29,16 +29,10 @@ class PaymentRequest extends Sdk\Message
         'TipAmount' => null,
     ];
 
-    public function to_array()
-    {
-        
-    }
-
     public function toArray()
     {
         $scheme = self::getValidationMetadata();
         return array_filter($this->data, function ($v, $k) use ($scheme) {
-//            var_dump($v, $k, $scheme[$k]);
             return ($scheme[$k]['required'] && !is_null($v));
         }, ARRAY_FILTER_USE_BOTH);
     }

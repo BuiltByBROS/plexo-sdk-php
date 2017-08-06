@@ -29,6 +29,7 @@ $response = $client->Authorize([
     'RedirectUri' => 'http://plexo.bros.me/retorno.php',
 ]);
 
+//var_dump($response);
 printf("http://testing.plexo.com.uy/plexoweb/Instruments/Chose?sessionid=%s\n", $response);
 
 ?>

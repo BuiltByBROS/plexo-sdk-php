@@ -1,3 +1,7 @@
+# Recibiendo peticiones callback
+
+## Ejemplo
+
 ```php
 <?php
 
@@ -22,14 +26,10 @@ fclose($fp);
 
 $signedRequest = Sdk\SignedRequest::fromJson($data);
 
-$cert = Registry::get('CertificateProvider')
-    ->getByFingerprint($signedRequest->fingerprint);
-
 $message = $signedRequest->getMessage();
-var_dump($signedRequest, $message);
 
 try {
-    $signedRequest->validate($cert);
+    $signedRequest->validate();
     $signedResponse = new Sdk\SignedResponse([
         'Client' => $message['Client'],
         'ResultCode' => 0,
@@ -40,7 +40,8 @@ try {
     $signedResponse = new Sdk\SignedResponse(new Sdk\Exception\PlexoException('Error interno.', Sdk\ResultCode::SYSTEM_ERROR));
 }
 
-$priv = Sdk\Certificate\Certificate::fromPfxFile($_ENV['PLEXO_CREDENTIALS_PFX_FILENAME'], $_ENV['PLEXO_CREDENTIALS_PFX_PASSPHRASE']);
+$certificateProvider = MyCertStore();
+$priv = $certificateProvider->getSigningCert();
 $signedResponse->sign($priv);
 
 header("Content-Type: application/json; charset=UTF-8");

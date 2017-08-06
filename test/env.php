@@ -6,12 +6,7 @@ date_default_timezone_set('America/Montevideo');
 
 require_once 'vendor/autoload.php';
 
-use Plexo\Sdk;
-
-$client = new Sdk\Client();
-
-$response = $client->GetSupportedIssuers();
-
-print_r($response);
+var_dump(getenv('PLEXO_CREDENTIALS_CLIENT'));
+var_dump(getenv('OTRO'));
 
 ?>

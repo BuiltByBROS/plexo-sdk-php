@@ -23,7 +23,7 @@ class Registry
     static public function add($object, $name = null) {
         $name = ($name && is_string($name)) ? $name : get_class($object);
         if (isset(self::$_store[$name])) {
-            throw new Exception("El objeto ya existe en el registro.");
+            throw new \PlexoException(sprintf("Ya existe un objeto registrado bajo el nombre '%s'.", $name));
         }
         self::$_store[$name]= $object;
     }
@@ -37,7 +37,7 @@ class Registry
     */
     static public function get($name) {
         if (!self::contains($name)) {
-            throw new Exception\Exception("El objeto no existe en el registro.");
+            throw new Exception\PlexoException("El objeto no existe en el registro.");
         }
         return self::$_store[$name];
     }

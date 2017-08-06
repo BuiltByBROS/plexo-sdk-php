@@ -12,7 +12,7 @@ Para correr el SDK, su sistema debe contar con **PHP >= 5.6** compilado con el m
 * Obtener nombre de usuario y certificado emitido por Plexo.
 * [Instalar el SDK](#instalación).
 * [Definir almacenamiento de certificados](#certificados).
-* [Fijar credenciales](#).
+* [Fijar credenciales](#credenciales).
 
 ## Instalación
 
