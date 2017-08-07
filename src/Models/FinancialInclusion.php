@@ -35,13 +35,22 @@ class FinancialInclusion implements PlexoModelInterface
         }
     }
     
-    public function toArray()
+    public function toArray($canonize = false)
     {
-        return [
-            'BilledAmount'  => is_null($this->BilledAmount)  ? null : sprintf('float(%.1f)', $this->BilledAmount),//(float) $this->BilledAmount,
-            'InvoiceNumber' => is_null($this->InvoiceNumber) ? null : (int) $this->InvoiceNumber,
-            'TaxedAmount'   => is_null($this->TaxedAmount)   ? null : sprintf('float(%.1f)', $this->TaxedAmount),//(float) $this->TaxedAmount,
-            'Type'          => is_null($this->Type)          ? null : (int) $this->Type,
-        ];
+        if ($canonize) {
+            return [
+                'BilledAmount'  => is_null($this->BilledAmount)  ? null : sprintf('float(%.1f)', $this->BilledAmount),
+                'InvoiceNumber' => is_null($this->InvoiceNumber) ? null : (int) $this->InvoiceNumber,
+                'TaxedAmount'   => is_null($this->TaxedAmount)   ? null : sprintf('float(%.1f)', $this->TaxedAmount),
+                'Type'          => is_null($this->Type)          ? null : (int) $this->Type,
+            ];
+        } else {
+            return [
+                'BilledAmount'  => is_null($this->BilledAmount)  ? null : (float) $this->BilledAmount,
+                'InvoiceNumber' => is_null($this->InvoiceNumber) ? null : (int) $this->InvoiceNumber,
+                'TaxedAmount'   => is_null($this->TaxedAmount)   ? null : (float) $this->TaxedAmount,
+                'Type'          => is_null($this->Type)          ? null : (int) $this->Type,
+            ];
+        }
     }
 }

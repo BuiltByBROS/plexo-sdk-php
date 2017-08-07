@@ -44,10 +44,10 @@ class Item implements PlexoModelInterface
         }
     }
 
-    public function toArray()
+    public function toArray($canonize = false)
     {
         return [
-            'Amount'                => is_null($this->Amount) ? null : sprintf('float(%.1f)', $this->Amount),//(float) $this->Amount,
+            'Amount'                => is_null($this->Amount) ? null : ($canonize ? sprintf('float(%.1f)', $this->Amount) : (float) $this->Amount),
             'ClientItemReferenceId' => $this->ClientItemReferenceId,
             'InfoLines'             => $this->InfoLines,
             'MetaData'              => $this->MetaData,

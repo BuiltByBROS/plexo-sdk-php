@@ -51,7 +51,7 @@ class SignedMessage {
         return new self($object, $fingerprint, $utcUnixTimeExpiration, $signature);
     }
     
-    public function toArray()
+    public function toArray($canonize = false)
     {
         $arr = [
             'Object' => [
@@ -67,7 +67,8 @@ class SignedMessage {
                     'ErrorMessage' => $this->object->getMessage(),
                 ];
             } else {
-                $arr['Object']['Object'] = is_array($this->object) ? $this->object : $this->object->toArray();
+                $arr['Object']['Object'] = is_array($this->object) ? $this->object : $this->object->toArray($canonize);
+                $arr['Object']['Object'] = Utilities\functions\array_filter_recursive($arr['Object']['Object'], $canonize);
             }
         }
         return $arr;
@@ -80,8 +81,8 @@ class SignedMessage {
 
     public function getSignatureBaseString()
     {
-        $message = $this->toArray();
-        $message['Object'] = Utilities\functions\array_filter_recursive($message['Object']);
+        $message = $this->toArray(true);
+//        $message['Object'] = Utilities\functions\array_filter_recursive($message['Object']);
         Utilities\functions\ksortRecursive($message['Object']);
         $json = json_encode($message['Object']);
         $json = preg_replace_callback('/\\\\u([0-9a-f]+)/', 'Plexo\Sdk\Utilities\functions\replace_unicode_escape_sequence', $json);
@@ -90,7 +91,6 @@ class SignedMessage {
         return $json;
     }
 
-//    public function sign($expirationTime = null, $cert_filename = null, $cert_passphrase = null)
     public function sign($cert, $expirationTime = null)
     {
         $this->fingerprint = $cert->fingerprint;

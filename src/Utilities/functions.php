@@ -1,14 +1,14 @@
 <?php
 namespace Plexo\Sdk\Utilities\functions;
 
-function array_filter_recursive($input)
+function array_filter_recursive($input, $canonize = false)
 {
     foreach ($input as &$value) {
         if ($value instanceof \Plexo\Sdk\Models\PlexoModelInterface) {
-            $value = $value->toArray();
+            $value = $value->toArray($canonize);
         }
         if (is_array($value)) {
-            $value = array_filter_recursive($value);
+            $value = array_filter_recursive($value, $canonize);
         }
     }
     return array_filter($input, function ($v) {

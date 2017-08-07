@@ -5,12 +5,39 @@ use Plexo\Sdk;
 
 class CancelRequest extends Sdk\Message
 {
-    public function to_array() {
-        
-    }
+    /**
+     *
+     * @var string
+     */
+    public $client;
 
-    public static function loadValidatorMetadata(\Symfony\Component\Validator\Mapping\ClassMetadata $metadata) {
-        
-    }
+    /**
+     * @var float $Amount
+     * @var PaymentInstrumentInput $PaymentInstrumentInput
+     * @var string $TransactionId
+     */
+    
+    protected $data = [
+        'Amount' => null,
+        'PaymentInstrumentInput' => null,
+        'TransactionId' => null,
+    ];
 
+    public function toArray($canonize = false)
+    {
+//        $scheme = self::getValidationMetadata();
+        $arr = $this->to_array();
+        if ($canonize && !is_null($arr['Amount'])) {
+            $arr['Amount'] = sprintf('float(%.1f)', $arr['Amount']);
+        }
+        //return array_filter($this->data, function ($v, $k) use ($scheme) {
+        //    return ($scheme[$k]['required'] && !is_null($v));
+        //}, ARRAY_FILTER_USE_BOTH);
+        //        $scheme = self::getValidationMetadata();
+        $data = [
+            'Client' => $this->client,
+            'Request' => $arr,
+        ];
+        return $data;
+    }
 }

@@ -82,7 +82,16 @@ class Client implements SecurePaymentGatewayInterface
 
     public function Cancel($payment)
     {
-        //Message\CancelRequest
+        if (is_array($payment)) {
+            $payment = new Message\CancelRequest($payment);
+            if (!array_key_exists('client', $this->config) || empty($this->config['client'])) {
+                throw new Exception\ResultCodeException('You must provide a valid client name', ResultCode::ARGUMENT_ERROR);
+            }
+            $payment->client = $this->config['client'];
+        }
+        if (!($payment instanceof Message\CancelRequest)) {
+            throw new \Exception('$payment debe ser del tipo array o \Plexo\Sdk\Message\CancelRequest');// FIXME
+        }
         return $this->_exec('POST', 'Operation/Cancel', $payment);
     }
     
@@ -93,6 +102,9 @@ class Client implements SecurePaymentGatewayInterface
      */
     public function GetServerPublicKey($fingerprint)
     {
+        if (!preg_match('/[0-9a-fA-F]{40}/', $fingerprint)) {
+            throw new Exception\PlexoException('El formato de Fingerprint no es válido.');
+        }
         $path = sprintf("Key/%s", $fingerprint);
         return $this->_exec('GET', $path);
     }
@@ -168,6 +180,9 @@ class Client implements SecurePaymentGatewayInterface
         }
         if (preg_match('/^Key\/([A-Z0-9]{40})$/', $path, $matches)) {
             if ($response_obj['Object']['Object']['Response']['Fingerprint'] === $matches[1]) {
+                if ($matches[1] ==! $response_obj['Object']['Object']['Response']['Fingerprint']) {
+                    throw new Exception\PlexoException('No fue posible obtener el certificado del servidor.');
+                }
                 $this->serverCert = Certificate\Certificate::fromServerPublicKey($response_obj['Object']['Object']['Response']['Key'], $matches[1]);
                 $certificateStore->save($this->serverCert);
             }

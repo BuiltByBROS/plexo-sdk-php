@@ -82,15 +82,13 @@ class PaymentRequest extends Sdk\Message
         ];
     }
 
-    public function toArray()
+    public function toArray($canonize = false)
     {
-        $scheme = self::getValidationMetadata();
-        $data = $this->to_array();
-        foreach ($scheme as $k => $v) {
-            if ($v['type'] === 'float') {
-                if (!is_null($data[$k])) {
-                    $data[$k] = sprintf('float(%f)', $data[$k]);
-                }
+//        $scheme = self::getValidationMetadata();
+        $arr = $this->to_array();
+        if ($canonize) {
+            if (!is_null($arr['TipAmount'])) {
+                $arr['TipAmount'] = sprintf('float(%.1f)', $arr['TipAmount']);
             }
         }
         //return array_filter($this->data, function ($v, $k) use ($scheme) {
@@ -99,7 +97,7 @@ class PaymentRequest extends Sdk\Message
         //        $scheme = self::getValidationMetadata();
         $data = [
             'Client' => $this->client,
-            'Request' => $this->to_array(),
+            'Request' => $arr,
         ];
         return $data;
     }
