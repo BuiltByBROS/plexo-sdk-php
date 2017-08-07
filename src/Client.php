@@ -8,8 +8,10 @@ class Client implements SecurePaymentGatewayInterface
     private $config;
     private $serverCert;
     
-    const TEST_URI = 'http://testing.plexo.com.uy/plexoapi/SecurePaymentGateway.svc/';
-    const PROD_URI = 'http://testing.plexo.com.uy/plexoapi/SecurePaymentGateway.svc/';
+    private static $env = [
+        'test' => 'http://testing.plexo.com.uy/plexoapi/SecurePaymentGateway.svc/',
+        'prod' => 'http://www.plexo.com.uy/plexoapi/SecurePaymentGateway.svc/',
+    ];
 
     /**
      *
@@ -18,8 +20,11 @@ class Client implements SecurePaymentGatewayInterface
     public function __construct(array $options = [])
     {
         $this->configureDefaults($options);
+        if (!array_key_exists($this->config['env'], self::$env)) {
+            throw new Exception\ConfigurationException(sprintf("Entorno '%s' no válido. Los entornos disponibles son: 'prod' y 'test'.", $this->config['env']));
+        }
         $this->http_client = new \GuzzleHttp\Client([
-            'base_uri' => $this->config['env'],
+            'base_uri' => self::$env[$this->config['env']],
             'headers' => [
                 'User-Agent' => sprintf('PlexoSdk/%s %s', self::VERSION, \GuzzleHttp\default_user_agent()),
                 'Accept'     => 'application/json',
@@ -37,6 +42,10 @@ class Client implements SecurePaymentGatewayInterface
     {
         if (is_array($auth)) {
             $auth = new Message\Authorization($auth);
+            if (!array_key_exists('client', $this->config) || empty($this->config['client'])) {
+                throw new Exception\ResultCodeException('You must provide a valid client name', ResultCode::ARGUMENT_ERROR);
+            }
+            $auth->client = $this->config['client'];
         }
         if (!($auth instanceof Message\Authorization)) {
             throw new Exception\PlexoException('$auth debe ser del tipo array o \Plexo\Sdk\Message\Authorization');// FIXME
@@ -48,7 +57,7 @@ class Client implements SecurePaymentGatewayInterface
 
     public function GetSupportedIssuers()
     {
-        return $this->_exec('POST', 'Issuer', ['Client' => 'Sodexo']);
+        return $this->_exec('POST', 'Issuer', ['Client' => $this->config['client']]);
     }
 
     /**
@@ -87,7 +96,7 @@ class Client implements SecurePaymentGatewayInterface
     private function configureDefaults(array $config)
     {
         $defaults = [
-            'env' => self::PROD_URI,
+            'env' => 'test',
             'pkey' => 0,
         ];
         if ($env = getenv('PLEXO_ENV')) {

@@ -2,11 +2,17 @@
 namespace Plexo\Sdk\Message;
 
 use Plexo\Sdk;
-use Symfony\Component\Validator\Mapping\ClassMetadata;
-use Symfony\Component\Validator\Constraints as Assert;
+//use Symfony\Component\Validator\Mapping\ClassMetadata;
+//use Symfony\Component\Validator\Constraints as Assert;
 
 class Authorization extends Sdk\Message
 {
+    /**
+     *
+     * @var string
+     */
+    public $client;
+    
     /**
      * @var int $Action              Action type defined in Sdk\ActionType
      * @var int $Type                Authorization type defined in Sdk\Type\AuthorizationType 
@@ -150,7 +156,7 @@ class Authorization extends Sdk\Message
     {
 //        $scheme = self::getValidationMetadata();
         $data = [
-            'Client' => 'Sodexo',//FIXME
+            'Client' => $this->client,
             'Request' => $this->to_array(),
         ];
         return $data;
