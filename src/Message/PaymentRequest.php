@@ -6,6 +6,12 @@ use Plexo\Sdk;
 class PaymentRequest extends Sdk\Message
 {
     /**
+     *
+     * @var string
+     */
+    public $client;
+
+    /**
      * @var string $ClientReferenceId
      * @var PaymentInstrumentInput $PaymentInstrumentInput
      * @var List<Item> $Items
@@ -29,18 +35,10 @@ class PaymentRequest extends Sdk\Message
         'TipAmount' => null,
     ];
 
-    public function toArray()
-    {
-        $scheme = self::getValidationMetadata();
-        return array_filter($this->data, function ($v, $k) use ($scheme) {
-            return ($scheme[$k]['required'] && !is_null($v));
-        }, ARRAY_FILTER_USE_BOTH);
-    }
-
-    public static function loadValidatorMetadata(\Symfony\Component\Validator\Mapping\ClassMetadata $metadata)
-    {
-        
-    }
+//    public static function loadValidatorMetadata(\Symfony\Component\Validator\Mapping\ClassMetadata $metadata)
+//    {
+//        
+//    }
     
     public static function getValidationMetadata()
     {
@@ -82,5 +80,27 @@ class PaymentRequest extends Sdk\Message
                 'required' => true,
             ],
         ];
+    }
+
+    public function toArray()
+    {
+        $scheme = self::getValidationMetadata();
+        $data = $this->to_array();
+        foreach ($scheme as $k => $v) {
+            if ($v['type'] === 'float') {
+                if (!is_null($data[$k])) {
+                    $data[$k] = sprintf('float(%f)', $data[$k]);
+                }
+            }
+        }
+        //return array_filter($this->data, function ($v, $k) use ($scheme) {
+        //    return ($scheme[$k]['required'] && !is_null($v));
+        //}, ARRAY_FILTER_USE_BOTH);
+        //        $scheme = self::getValidationMetadata();
+        $data = [
+            'Client' => $this->client,
+            'Request' => $this->to_array(),
+        ];
+        return $data;
     }
 }

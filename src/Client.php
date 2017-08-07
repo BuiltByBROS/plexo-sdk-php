@@ -69,6 +69,10 @@ class Client implements SecurePaymentGatewayInterface
     {
         if (is_array($payment)) {
             $payment = new Message\PaymentRequest($payment);
+            if (!array_key_exists('client', $this->config) || empty($this->config['client'])) {
+                throw new Exception\ResultCodeException('You must provide a valid client name', ResultCode::ARGUMENT_ERROR);
+            }
+            $payment->client = $this->config['client'];
         }
         if (!($payment instanceof Message\PaymentRequest)) {
             throw new \Exception('$payment debe ser del tipo array o \Plexo\Sdk\Message\PaymentRequest');// FIXME

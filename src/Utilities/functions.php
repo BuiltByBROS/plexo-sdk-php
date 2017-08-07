@@ -1,9 +1,12 @@
 <?php
 namespace Plexo\Sdk\Utilities\functions;
 
-function array_filter_recursive($input, $callback = null)
+function array_filter_recursive($input)
 {
     foreach ($input as &$value) {
+        if ($value instanceof \Plexo\Sdk\Models\PlexoModelInterface) {
+            $value = $value->toArray();
+        }
         if (is_array($value)) {
             $value = array_filter_recursive($value);
         }

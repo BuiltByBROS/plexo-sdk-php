@@ -1,7 +1,8 @@
 <?php
 namespace Plexo\Sdk\Models;
 
-class FinancialInclusion {
+class FinancialInclusion implements PlexoModelInterface
+{
     /**
      * @var float
      */
@@ -25,15 +26,22 @@ class FinancialInclusion {
 
     /**
      * 
-     * @param int $type
-     * @param float $taxedAmount
-     * @param float $billedAmount
-     * @param int $invoiceNumber
+     * @param array $params
      */
-    public function __construct($type, $taxedAmount, $billedAmount, $invoiceNumber) {
-        $this->Type = $type;
-        $this->TaxedAmount = $taxedAmount;
-        $this->BilledAmount = $billedAmount;
-        $this->InvoiceNumber = $invoiceNumber;
+    public function __construct(array $params = [])
+    {
+        foreach ($params as $k => $v) {
+            $this->{$k} = $v;
+        }
+    }
+    
+    public function toArray()
+    {
+        return [
+            'BilledAmount'  => is_null($this->BilledAmount)  ? null : sprintf('float(%.1f)', $this->BilledAmount),//(float) $this->BilledAmount,
+            'InvoiceNumber' => is_null($this->InvoiceNumber) ? null : (int) $this->InvoiceNumber,
+            'TaxedAmount'   => is_null($this->TaxedAmount)   ? null : sprintf('float(%.1f)', $this->TaxedAmount),//(float) $this->TaxedAmount,
+            'Type'          => is_null($this->Type)          ? null : (int) $this->Type,
+        ];
     }
 }
