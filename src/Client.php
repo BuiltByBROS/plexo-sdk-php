@@ -3,13 +3,15 @@ namespace Plexo\Sdk;
 
 class Client implements SecurePaymentGatewayInterface
 {
-    const VERSION = '0.1.0';
+    const VERSION = '0.1.1';
     private $http_client;
     private $config;
     private $serverCert;
     
-    const TEST_URI = 'http://testing.plexo.com.uy/plexoapi/SecurePaymentGateway.svc/';
-    const PROD_URI = 'http://testing.plexo.com.uy/plexoapi/SecurePaymentGateway.svc/';
+    private static $env = [
+        'test' => 'http://testing.plexo.com.uy/plexoapi/SecurePaymentGateway.svc/',
+        'prod' => 'http://www.plexo.com.uy/plexoapi/SecurePaymentGateway.svc/',
+    ];
 
     /**
      *
@@ -18,8 +20,11 @@ class Client implements SecurePaymentGatewayInterface
     public function __construct(array $options = [])
     {
         $this->configureDefaults($options);
+        if (!array_key_exists($this->config['env'], self::$env)) {
+            throw new Exception\ConfigurationException(sprintf("Entorno '%s' no válido. Los entornos disponibles son: 'prod' y 'test'.", $this->config['env']));
+        }
         $this->http_client = new \GuzzleHttp\Client([
-            'base_uri' => $this->config['env'],
+            'base_uri' => self::$env[$this->config['env']],
             'headers' => [
                 'User-Agent' => sprintf('PlexoSdk/%s %s', self::VERSION, \GuzzleHttp\default_user_agent()),
                 'Accept'     => 'application/json',
@@ -37,6 +42,10 @@ class Client implements SecurePaymentGatewayInterface
     {
         if (is_array($auth)) {
             $auth = new Message\Authorization($auth);
+            if (!array_key_exists('client', $this->config) || empty($this->config['client'])) {
+                throw new Exception\ResultCodeException('You must provide a valid client name', ResultCode::ARGUMENT_ERROR);
+            }
+            $auth->client = $this->config['client'];
         }
         if (!($auth instanceof Message\Authorization)) {
             throw new Exception\PlexoException('$auth debe ser del tipo array o \Plexo\Sdk\Message\Authorization');// FIXME
@@ -48,7 +57,7 @@ class Client implements SecurePaymentGatewayInterface
 
     public function GetSupportedIssuers()
     {
-        return $this->_exec('POST', 'Issuer', ['Client' => 'Sodexo']);
+        return $this->_exec('POST', 'Issuer', ['Client' => $this->config['client']]);
     }
 
     /**
@@ -60,6 +69,10 @@ class Client implements SecurePaymentGatewayInterface
     {
         if (is_array($payment)) {
             $payment = new Message\PaymentRequest($payment);
+            if (!array_key_exists('client', $this->config) || empty($this->config['client'])) {
+                throw new Exception\ResultCodeException('You must provide a valid client name', ResultCode::ARGUMENT_ERROR);
+            }
+            $payment->client = $this->config['client'];
         }
         if (!($payment instanceof Message\PaymentRequest)) {
             throw new \Exception('$payment debe ser del tipo array o \Plexo\Sdk\Message\PaymentRequest');// FIXME
@@ -69,7 +82,16 @@ class Client implements SecurePaymentGatewayInterface
 
     public function Cancel($payment)
     {
-        //Message\CancelRequest
+        if (is_array($payment)) {
+            $payment = new Message\CancelRequest($payment);
+            if (!array_key_exists('client', $this->config) || empty($this->config['client'])) {
+                throw new Exception\ResultCodeException('You must provide a valid client name', ResultCode::ARGUMENT_ERROR);
+            }
+            $payment->client = $this->config['client'];
+        }
+        if (!($payment instanceof Message\CancelRequest)) {
+            throw new \Exception('$payment debe ser del tipo array o \Plexo\Sdk\Message\CancelRequest');// FIXME
+        }
         return $this->_exec('POST', 'Operation/Cancel', $payment);
     }
     
@@ -80,6 +102,9 @@ class Client implements SecurePaymentGatewayInterface
      */
     public function GetServerPublicKey($fingerprint)
     {
+        if (!preg_match('/[0-9a-fA-F]{40}/', $fingerprint)) {
+            throw new Exception\PlexoException('El formato de Fingerprint no es válido.');
+        }
         $path = sprintf("Key/%s", $fingerprint);
         return $this->_exec('GET', $path);
     }
@@ -87,7 +112,7 @@ class Client implements SecurePaymentGatewayInterface
     private function configureDefaults(array $config)
     {
         $defaults = [
-            'env' => self::PROD_URI,
+            'env' => 'test',
             'pkey' => 0,
         ];
         if ($env = getenv('PLEXO_ENV')) {
@@ -155,6 +180,9 @@ class Client implements SecurePaymentGatewayInterface
         }
         if (preg_match('/^Key\/([A-Z0-9]{40})$/', $path, $matches)) {
             if ($response_obj['Object']['Object']['Response']['Fingerprint'] === $matches[1]) {
+                if ($matches[1] ==! $response_obj['Object']['Object']['Response']['Fingerprint']) {
+                    throw new Exception\PlexoException('No fue posible obtener el certificado del servidor.');
+                }
                 $this->serverCert = Certificate\Certificate::fromServerPublicKey($response_obj['Object']['Object']['Response']['Key'], $matches[1]);
                 $certificateStore->save($this->serverCert);
             }

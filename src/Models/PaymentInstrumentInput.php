@@ -1,7 +1,7 @@
 <?php
 namespace Plexo\Sdk\Models;
 
-class PaymentInstrumentInput
+class PaymentInstrumentInput implements PlexoModelInterface
 {
     /**
      * @var string 
@@ -16,5 +16,24 @@ class PaymentInstrumentInput
     /**
      * @var bool
      */
-    public $UseExtendedClientCreditIfAvailable;
+    public $UseExtendedClientCreditIfAvailable = false;
+
+    /**
+     * 
+     * @param array $params
+     */
+    public function __construct(array $params = []) {
+        foreach ($params as $k => $v) {
+            $this->{$k} = $v;
+        }
+    }
+
+    public function toArray()
+    {
+        return [
+            'InstrumentToken'                    => $this->InstrumentToken,
+            'NonStorableItems'                   => $this->NonStorableItems,
+            'UseExtendedClientCreditIfAvailable' => $this->UseExtendedClientCreditIfAvailable,
+        ];
+    }
 }
