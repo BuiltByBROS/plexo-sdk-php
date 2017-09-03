@@ -109,6 +109,97 @@ class Client implements SecurePaymentGatewayInterface
         return $this->_exec('GET', $path);
     }
 
+    //[WebInvoke(UriTemplate = "Operation/StartReserve", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST")]
+    //Task<ServerResponse<Transaction>> StartReserve(ReserveRequest payment);
+    public function StartReserve($payment)
+    {
+        
+    }
+
+    //[WebInvoke(UriTemplate = "Operation/EndReserve", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST")]
+    //Task<ServerResponse<Transaction>> EndReserve(Reserve reserve);
+    public function EndReserve($reserve)
+    {
+        
+    }
+
+    //[WebInvoke(UriTemplate = "Operation/Status", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST")]
+    //Task<ServerResponse<Transaction>> Status(Reference payment);
+    public function Status($payment)
+    {
+        
+    }
+
+    //[WebInvoke(UriTemplate = "Instruments", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST")]
+    //Task<ServerResponse<List<PaymentInstrument>>> GetInstruments(AuthorizationInfo info);
+    public function GetInstruments($info)
+    {
+        
+    }
+
+    //[WebInvoke(UriTemplate = "Instruments/Delete", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST")]
+    //Task<ServerResponse> DeleteInstrument(DeleteInstrumentRequest info);
+    public function DeleteInstrument($info)
+    {
+        
+    }
+
+    //[WebGet(UriTemplate = "Commerce", ResponseFormat = WebMessageFormat.Json)]
+    //Task<ServerResponse<List<Commerce>>> GetCommerces();
+    public function GetCommerces()
+    {
+        
+    }
+
+    //[WebInvoke(UriTemplate = "Commerce/Add", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST")]
+    //Task<ServerResponse<Commerce>> AddCommerce(CommerceRequest commerce);
+    public function AddCommerce($commerce)
+    {
+        
+    }
+
+    //[WebInvoke(UriTemplate = "Commerce/Modify", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST")]
+    //Task<ServerResponse<Commerce>> ModifyCommerce(CommerceModifyRequest commerce);
+    public function ModifyCommerce($commerce)
+    {
+        
+    }
+
+//    [WebInvoke(UriTemplate = "Commerce/Delete", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST")]
+//    Task<ServerResponse> DeleteCommerce(CommerceIdRequest commerce);
+    public function DeleteCommerce($commerce)
+    {
+        
+    }
+
+    //[WebInvoke(UriTemplate = "Commerce/SetDefault", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST")]
+    //Task<ServerResponse> SetDefaultCommerce(CommerceIdRequest commerce);
+    public function SetDefaultCommerce($commerce)
+    {
+        
+    }
+
+    //[WebInvoke(UriTemplate = "Commerce/Issuer", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST")]
+    //Task<ServerResponse<List<IssuerData>>> GetCommerceIssuers(CommerceIdRequest commerce);
+    public function GetCommerceIssuers($commerce)
+    {
+        
+    }
+
+    //[WebInvoke(UriTemplate = "Commerce/Issuer/Add", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST")]
+    //Task<ServerResponse<IssuerData>> AddIssuerCommerce(IssuerData commerce);
+    public function AddIssuerCommerce($commerce)
+    {
+        
+    }
+
+    //[WebInvoke(UriTemplate = "Commerce/Issuer/Delete", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST")]
+    //Task<ServerResponse> DeleteIssuerCommerce(CommerceIssuerIdRequest commerce);
+    public function DeleteIssuerCommerce($commerce)
+    {
+        
+    }
+
     private function configureDefaults(array $config)
     {
         $defaults = [
