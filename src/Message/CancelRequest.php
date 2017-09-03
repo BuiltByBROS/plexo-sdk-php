@@ -12,28 +12,20 @@ class CancelRequest extends Sdk\Message
     public $client;
 
     /**
-     * @var float $Amount
-     * @var PaymentInstrumentInput $PaymentInstrumentInput
-     * @var string $TransactionId
+     * @var int $Type
+     * @var string $ClientReferenceId
+     * @var string $MetaReference
      */
     
     protected $data = [
-        'Amount' => null,
-        'PaymentInstrumentInput' => null,
-        'TransactionId' => null,
+        'ClientReferenceId' => null,
+        'MetaReference' => null,
+        'Type' => 0,
     ];
 
     public function toArray($canonize = false)
     {
-//        $scheme = self::getValidationMetadata();
         $arr = $this->to_array();
-        if ($canonize && !is_null($arr['Amount'])) {
-            $arr['Amount'] = sprintf('float(%.1f)', $arr['Amount']);
-        }
-        //return array_filter($this->data, function ($v, $k) use ($scheme) {
-        //    return ($scheme[$k]['required'] && !is_null($v));
-        //}, ARRAY_FILTER_USE_BOTH);
-        //        $scheme = self::getValidationMetadata();
         $data = [
             'Client' => $this->client,
             'Request' => $arr,

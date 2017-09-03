@@ -189,7 +189,7 @@ class Client implements SecurePaymentGatewayInterface
         }
         $signedResponse = new SignedResponse($response_obj['Object']['Object'], $response_obj['Object']['Fingerprint'], $response_obj['Object']['UTCUnixTimeExpiration'], $response_obj['Signature']);
         $fingerprint = $signedResponse->getFingerprint();
-        if ((!$this->serverCert || $this->serverCert->fingerprint !== $fingerprint) && !$certificateStore->getByFingerprint($fingerprint)) {
+        if ((!$this->serverCert || $this->serverCert->fingerprint !== $fingerprint) && !($this->serverCert = $certificateStore->getByFingerprint($fingerprint))) {
             $this->GetServerPublicKey($fingerprint);
         }
         $signedResponse->verify($this->serverCert);
