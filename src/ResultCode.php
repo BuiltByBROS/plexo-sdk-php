@@ -28,4 +28,6 @@ abstract class ResultCode
     const INVALID_VERIFICATION                                 = 22;
     const REQUIRES_SESSION_EXTENDED_AMOUNT                     = 23;
     const REQUIRES_CLIENT_EXTENDED_AMOUNT                      = 24;
+    const ALREADY_EXISTS                                       = 25;
+    const MISSING_FIELDS                                       = 26;
 }
