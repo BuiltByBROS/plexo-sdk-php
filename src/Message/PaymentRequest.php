@@ -19,7 +19,7 @@ class PaymentRequest extends Sdk\Message
      * @var int $Installments
      * @var FinancialInclusion $FinancialInclusion
      * @var float $TipAmount
-     * @var string $OptionalPointOfSale
+     * @var int $OptionalCommerceId
      * @var string $OptionalMetadata
      */
     
@@ -29,8 +29,8 @@ class PaymentRequest extends Sdk\Message
         'FinancialInclusion' => null,
         'Installments' => null,
         'Items' => null,
+        'OptionalCommerceId' => null,
         'OptionalMetadata' => null,
-        'OptionalPointOfSale' => null,
         'PaymentInstrumentInput' => null,
         'TipAmount' => null,
     ];
@@ -71,9 +71,9 @@ class PaymentRequest extends Sdk\Message
                 'type' => 'float',
                 'required' => true,
             ],
-            'OptionalPointOfSale' => [
-                'type' => 'string',
-                'required' => true,
+            'OptionalCommerceId' => [
+                'type' => 'int',
+                'required' => false,
             ],
             'OptionalMetadata' => [
                 'type' => 'string',
