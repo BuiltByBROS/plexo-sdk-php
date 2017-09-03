@@ -28,6 +28,7 @@ class Authorization extends Sdk\Message
     protected $data = [
         'Action' => null,
         'ClientInformation' => null,
+        'DoNotUseCallback' => false,
         'ExtendableInstrumentToken' => null,
         'LimitIssuers' => null,
         'MetaReference' => null,

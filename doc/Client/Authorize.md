@@ -29,7 +29,7 @@ obteniendo como resultado una sesión de usuario.
 
 ## Valores devueltos
 
-(string) Id de sesión.
+(array) Información de sesión.
 
 ## Ejemplo
 
@@ -50,7 +50,7 @@ try {
         'MetaReference' => '123456',
         'RedirectUri' => 'http://www.sitiocliente.com/plexo/XXX/YYY',
     ]);
-    printf("ID de sesión: %s\n", $response);
+    print_r($response);
 } catch (Sdk\Exception\PlexoException $exc) {
     printf("[%s] (%d) %s\n", get_class($exc), $exc->getCode(), $exc->getMessage());
 }
@@ -59,5 +59,10 @@ try {
 ### Imprime
 
 ```
-ID de sesión: 0e22e728c74046ce9353736c2c5bbe0b
+Array
+(
+    [Id] => 0123456789abcdef0123456789abcdef
+    [Uri] => http://plexo.com.uy/plexoweb/Instruments/Chose?sessionid=0123456789abcdef0123456789abcdef
+    [ExpirationUTC] => 1504490598
+)
 ```

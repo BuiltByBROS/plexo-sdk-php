@@ -3,7 +3,7 @@ namespace Plexo\Sdk;
 
 class Client implements SecurePaymentGatewayInterface
 {
-    const VERSION = '0.1.1';
+    const VERSION = '0.2.0';
     private $http_client;
     private $config;
     private $serverCert;
@@ -35,7 +35,7 @@ class Client implements SecurePaymentGatewayInterface
     /**
      *
      * @param (array|\Plexo\Sdk\Message\Authorization) $auth
-     * @return \stdClass
+     * @return array
      * @throws \Exception
      */
     public function Authorize($auth)
