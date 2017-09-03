@@ -23,6 +23,7 @@ obteniendo como resultado una sesión de usuario.
   * **RedirectUri** (string)
   * **OptionalMetadata** *opcional*
   * **ClientInformation** *opcional* (array)
+  * **DoNotUseCallback** *bool*
   * **LimitIssuers** *opcional*
   * **PromotionInfoIssuers** *opcional*
   * **ExtendableInstrumentToken** (opcional)
@@ -49,6 +50,11 @@ try {
         'Type' => Type\AuthorizationType::ANONYMOUS,
         'MetaReference' => '123456',
         'RedirectUri' => 'http://www.sitiocliente.com/plexo/XXX/YYY',
+        'ClientInformation' => [
+            new Type\FieldType(Type\FieldType::IDENTIFICATION_TYPE, Type\FieldType::IDENTIFICATION_TYPE_CI),
+            new Type\FieldType(Type\FieldType::IDENTIFICATION, '11111111'),
+            new Type\FieldType(Type\FieldType::EMAIL, 'mail@dominio.com'),
+        ],
     ]);
     print_r($response);
 } catch (Sdk\Exception\PlexoException $exc) {

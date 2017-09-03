@@ -19,7 +19,7 @@ class Authorization extends Sdk\Message
      * @var string $MetaReference 
      * @var string $RedirectUri
      * @var string $OptionalMetadata (Optional) 
-     * @var array <string, object> $ClientInformation (Optional) 
+     * @var array $ClientInformation (Optional) Sdk\Type\FieldType's list
      * @var array <string> $LimitIssuers  (Optional) 
      * @var Dictionary<string, string> $PromotionInfoIssuers (Optional)  
      * @var string $ExtendableInstrumentToken (Optional) 
@@ -132,6 +132,10 @@ class Authorization extends Sdk\Message
                 'type' => 'array',
                 'required' => false,
             ],
+            'DoNotUseCallback' => [
+                'type' => 'bool',
+                'required' => false,
+            ],
             'LimitIssuers' => [
                 'type' => 'array',
                 'required' => false,
@@ -153,12 +157,21 @@ class Authorization extends Sdk\Message
 ////        parent::validate();
 //    }
     
-    public function toArray()
+    public function toArray($canonize = false)
     {
 //        $scheme = self::getValidationMetadata();
+        $arr = $this->to_array();
+        if (is_array($arr['ClientInformation'])) {
+            $clientInformation = array();
+            foreach ($arr['ClientInformation'] AS $v) {
+                $k = $canonize ? $v->getParamKey() : $v->getParam();
+                $clientInformation[$k] = (string) $v->getValue();
+            }
+            $arr['ClientInformation'] = $clientInformation;
+        }
         $data = [
             'Client' => $this->client,
-            'Request' => $this->to_array(),
+            'Request' => $arr,
         ];
         return $data;
     }

@@ -45,8 +45,68 @@ class FieldType {
     const PIN                          = 0x8181;
     const CVC                          = 0x8182;
 
-    const IDENTIFICATION_TYPE_CI       = 0;
-    const IDENTIFICATION_TYPE_PASSPORT = 1;
-    const IDENTIFICATION_TYPE_OTHER    = 3;
-    const IDENTIFICATION_TYPE_RUT      = 4;
+    const IDENTIFICATION_TYPE_CI       = '0';
+    const IDENTIFICATION_TYPE_PASSPORT = '1';
+    const IDENTIFICATION_TYPE_OTHER    = '3';
+    const IDENTIFICATION_TYPE_RUT      = '4';
+    
+    private static $keys = [
+        0x101 => 'Expiration',
+        'Name',
+        'Address',
+        'ZipCode',
+        'Email',
+        'Phone',
+        'Cellphone',
+        'AmountLimitExtension',
+        'Birthdate',
+        'InstrumentName',
+        'Identification',
+        'IdentificationType',
+        'IdentificationTypeExtended',
+        'AccountNumber',
+        'FirstName',
+        'LastName',
+        'City',
+        0x401 => 'Provider',
+        0x501 => 'SistarBancPaymentMethod',
+        'RedPagosProductNumber',
+        'RedPagosUserEnabled',
+        0x801 => 'ProviderCommerceNumber',
+        'OcaTaxiCode',
+        'TerminalNumber',
+        'PosNumber',
+        0x8101 => 'Pan',
+        'Token',
+        'UniqueId',
+        0x8181 => 'Pin',
+        'CVC',
+    ];
+
+    private $param;
+    private $value;
+
+    public function __construct($param, $value)
+    {
+        $this->param = $param;
+        $this->value = $value;
+    }
+
+    public function getParam()
+    {
+        return $this->param;
+    }
+
+    public function getParamKey()
+    {
+        if (!array_key_exists($this->param, self::$keys)) {
+            throw new \Plexo\Sdk\Exception\InvalidArgumentException();
+        }
+        return self::$keys[$this->param];
+    }
+
+    public function getValue()
+    {
+        return $this->value;
+    }
 }
