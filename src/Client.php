@@ -42,22 +42,12 @@ class Client implements SecurePaymentGatewayInterface
     {
         if (is_array($auth)) {
             $auth = new Message\Authorization($auth);
-            if (!array_key_exists('client', $this->config) || empty($this->config['client'])) {
-                throw new Exception\ResultCodeException('You must provide a valid client name', ResultCode::ARGUMENT_ERROR);
-            }
-            $auth->client = $this->config['client'];
+            $auth->client = $this->_getClientName();
         }
         if (!($auth instanceof Message\Authorization)) {
             throw new Exception\PlexoException('$auth debe ser del tipo array o \Plexo\Sdk\Message\Authorization');// FIXME
         }
-//        $response = $this->_exec('POST', 'Auth', $auth);
-//        return $response['Response'];
         return $this->_exec('POST', 'Auth', $auth);
-    }
-
-    public function GetSupportedIssuers()
-    {
-        return $this->_exec('POST', 'Issuer', ['Client' => $this->config['client']]);
     }
 
     /**
@@ -69,10 +59,7 @@ class Client implements SecurePaymentGatewayInterface
     {
         if (is_array($payment)) {
             $payment = new Message\PaymentRequest($payment);
-            if (!array_key_exists('client', $this->config) || empty($this->config['client'])) {
-                throw new Exception\ResultCodeException('You must provide a valid client name', ResultCode::ARGUMENT_ERROR);
-            }
-            $payment->client = $this->config['client'];
+            $payment->client = $this->_getClientName();
         }
         if (!($payment instanceof Message\PaymentRequest)) {
             throw new \Exception('$payment debe ser del tipo array o \Plexo\Sdk\Message\PaymentRequest');// FIXME
@@ -84,17 +71,175 @@ class Client implements SecurePaymentGatewayInterface
     {
         if (is_array($payment)) {
             $payment = new Message\CancelRequest($payment);
-            if (!array_key_exists('client', $this->config) || empty($this->config['client'])) {
-                throw new Exception\ResultCodeException('You must provide a valid client name', ResultCode::ARGUMENT_ERROR);
-            }
-            $payment->client = $this->config['client'];
+            $payment->client = $this->_getClientName();
         }
         if (!($payment instanceof Message\CancelRequest)) {
             throw new \Exception('$payment debe ser del tipo array o \Plexo\Sdk\Message\CancelRequest');// FIXME
         }
         return $this->_exec('POST', 'Operation/Cancel', $payment);
     }
-    
+
+    //[WebInvoke(UriTemplate = "Operation/StartReserve", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST")]
+    //Task<ServerResponse<Transaction>> StartReserve(ReserveRequest payment);
+    public function StartReserve($payment)
+    {
+        if (is_array($payment)) {
+            $payment = new Message\ReserveRequest($payment);
+            $payment->client = $this->_getClientName();
+        }
+        return $this->_exec('POST', 'Operation/StartReserve', $payment);
+    }
+
+    public function EndReserve($reserve)
+    {
+        if (is_array($reserve)) {
+            $reserve = new Message\Reserve($reserve);
+            $reserve->client = $this->_getClientName();
+        }
+        return $this->_exec('POST', 'Operation/EndReserve', $reserve);
+    }
+
+    public function Status($payment)
+    {
+        if (is_array($payment)) {
+            $payment = new Message\Reserve($payment);
+            $payment->client = $this->_getClientName();
+        }
+        return $this->_exec('POST', 'Operation/Status', $payment);
+    }
+
+    public function GetInstruments($info)
+    {
+        if (is_array($info)) {
+            $info = new Message\AuthorizationInfo($info);
+            $info->client = $this->_getClientName();
+        }
+        return $this->_exec('POST', 'Instruments', $info);
+    }
+
+    //Task<ServerSignedResponse> DeleteInstrument(ClientSignedRequest<DeleteInstrumentRequest> info);
+    public function DeleteInstrument($info)
+    {
+        if (is_array($info)) {
+            $info = new Message\DeleteInstrumentRequest($info);
+            $info->client = $this->_getClientName();
+        }
+        return $this->_exec('POST', 'Instruments/Delete', $info);
+    }
+
+    public function GetSupportedIssuers()
+    {
+        return $this->_exec('POST', 'Issuer', ['Client' => $this->$this->_getClientName()]);
+    }
+
+    /**
+     * 
+     * @return array
+     */
+    public function GetCommerces()
+    {
+        $commerces = $this->_exec('POST', 'Commerce', ['Client' => $this->config['client']]);
+        return array_map(function($item) {
+            return new Models\Commerce($item);
+        }, $commerces);
+    }
+
+    /**
+     * 
+     * @param array $commerce
+     * @return \Plexo\Sdk\Models\Commerce
+     */
+    public function AddCommerce($commerce)
+    {
+        if (is_array($commerce)) {
+            $commerce = new Message\Commerce($commerce);
+            $commerce->CommerceId = null;
+            $commerce->client = $this->_getClientName();
+        }
+        return new Models\Commerce($this->_exec('POST', 'Commerce/Add', $commerce));
+    }
+
+    /**
+     * 
+     * @param array $commerce
+     * @return \Plexo\Sdk\Models\Commerce
+     */
+    public function ModifyCommerce($commerce)
+    {
+        if (is_array($commerce)) {
+            $commerce = new Message\Commerce($commerce);
+            $commerce->client = $this->_getClientName();
+        }
+        return new Models\Commerce($this->_exec('POST', 'Commerce/Modify', $commerce));
+    }
+
+    /**
+     * 
+     * @param array $commerce
+     * @return void
+     */
+    public function DeleteCommerce($commerce)
+    {
+        if (is_array($commerce)) {
+            $commerce = new Message\Commerce($commerce);
+            $commerce->Name = null;
+            $commerce->client = $this->_getClientName();
+        }
+        return $this->_exec('POST', 'Commerce/Delete', $commerce);
+    }
+
+    /**
+     * 
+     * @param array $commerce
+     * @return void
+     */
+    public function SetDefaultCommerce($commerce)
+    {
+        if (is_array($commerce)) {
+            $commerce = new Message\Commerce($commerce);
+            $commerce->Name = null;
+            $commerce->client = $this->_getClientName();
+        }
+        return $this->_exec('POST', 'Commerce/SetDefault', $commerce);
+    }
+
+    public function GetCommerceIssuers($commerce)
+    {
+        if (is_array($commerce)) {
+            $commerce = new Message\Commerce($commerce);
+            $commerce->Name = null;
+            $commerce->client = $this->_getClientName();
+        }
+        $issuers = $this->_exec('POST', 'Commerce/Issuer', $commerce);
+        return array_map(function($issuer) {
+            return new Models\IssuerData($issuer);
+        }, $issuers);
+    }
+
+    public function AddIssuerCommerce($commerce)
+    {
+        if (is_array($commerce)) {
+            $commerce = new Message\IssuerData($commerce);
+            $commerce->client = $this->_getClientName();
+        }
+        return new Models\IssuerData($this->_exec('POST', 'Commerce/Issuer/Add', $commerce));
+    }
+
+    /**
+     * 
+     * @param array $commerce
+     * @return void
+     */
+    public function DeleteIssuerCommerce($commerce)
+    {
+        if (is_array($commerce)) {
+            $commerce = new Message\IssuerData($commerce);
+            $commerce->Metadata = null;
+            $commerce->client = $this->_getClientName();
+        }
+        return $this->_exec('POST', 'Commerce/Issuer/Delete', $commerce);
+    }
+
     /**
      *
      * @param string $fingerprint
@@ -107,97 +252,6 @@ class Client implements SecurePaymentGatewayInterface
         }
         $path = sprintf("Key/%s", $fingerprint);
         return $this->_exec('GET', $path);
-    }
-
-    //[WebInvoke(UriTemplate = "Operation/StartReserve", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST")]
-    //Task<ServerResponse<Transaction>> StartReserve(ReserveRequest payment);
-    public function StartReserve($payment)
-    {
-        
-    }
-
-    //[WebInvoke(UriTemplate = "Operation/EndReserve", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST")]
-    //Task<ServerResponse<Transaction>> EndReserve(Reserve reserve);
-    public function EndReserve($reserve)
-    {
-        
-    }
-
-    //[WebInvoke(UriTemplate = "Operation/Status", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST")]
-    //Task<ServerResponse<Transaction>> Status(Reference payment);
-    public function Status($payment)
-    {
-        
-    }
-
-    //[WebInvoke(UriTemplate = "Instruments", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST")]
-    //Task<ServerResponse<List<PaymentInstrument>>> GetInstruments(AuthorizationInfo info);
-    public function GetInstruments($info)
-    {
-        
-    }
-
-    //[WebInvoke(UriTemplate = "Instruments/Delete", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST")]
-    //Task<ServerResponse> DeleteInstrument(DeleteInstrumentRequest info);
-    public function DeleteInstrument($info)
-    {
-        
-    }
-
-    //[WebGet(UriTemplate = "Commerce", ResponseFormat = WebMessageFormat.Json)]
-    //Task<ServerResponse<List<Commerce>>> GetCommerces();
-    public function GetCommerces()
-    {
-        
-    }
-
-    //[WebInvoke(UriTemplate = "Commerce/Add", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST")]
-    //Task<ServerResponse<Commerce>> AddCommerce(CommerceRequest commerce);
-    public function AddCommerce($commerce)
-    {
-        
-    }
-
-    //[WebInvoke(UriTemplate = "Commerce/Modify", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST")]
-    //Task<ServerResponse<Commerce>> ModifyCommerce(CommerceModifyRequest commerce);
-    public function ModifyCommerce($commerce)
-    {
-        
-    }
-
-//    [WebInvoke(UriTemplate = "Commerce/Delete", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST")]
-//    Task<ServerResponse> DeleteCommerce(CommerceIdRequest commerce);
-    public function DeleteCommerce($commerce)
-    {
-        
-    }
-
-    //[WebInvoke(UriTemplate = "Commerce/SetDefault", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST")]
-    //Task<ServerResponse> SetDefaultCommerce(CommerceIdRequest commerce);
-    public function SetDefaultCommerce($commerce)
-    {
-        
-    }
-
-    //[WebInvoke(UriTemplate = "Commerce/Issuer", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST")]
-    //Task<ServerResponse<List<IssuerData>>> GetCommerceIssuers(CommerceIdRequest commerce);
-    public function GetCommerceIssuers($commerce)
-    {
-        
-    }
-
-    //[WebInvoke(UriTemplate = "Commerce/Issuer/Add", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST")]
-    //Task<ServerResponse<IssuerData>> AddIssuerCommerce(IssuerData commerce);
-    public function AddIssuerCommerce($commerce)
-    {
-        
-    }
-
-    //[WebInvoke(UriTemplate = "Commerce/Issuer/Delete", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST")]
-    //Task<ServerResponse> DeleteIssuerCommerce(CommerceIssuerIdRequest commerce);
-    public function DeleteIssuerCommerce($commerce)
-    {
-        
     }
 
     private function configureDefaults(array $config)
@@ -230,6 +284,14 @@ class Client implements SecurePaymentGatewayInterface
         } elseif(isset($this->config['pfx_filename']) && isset($this->config['pfx_passphrase'])) {
             $this->config['pkey'] = 3;
         }
+    }
+
+    private function _getClientName()
+    {
+        if (!array_key_exists('client', $this->config) || empty($this->config['client'])) {
+            throw new Exception\ResultCodeException('You must provide a valid client name', ResultCode::ARGUMENT_ERROR);
+        }
+        return $this->config['client'];
     }
 
     /**
@@ -288,7 +350,7 @@ class Client implements SecurePaymentGatewayInterface
             throw new Exception\ResultCodeException($response_obj['Object']['Object']['ErrorMessage'], $response_obj['Object']['Object']['ResultCode']);
         }
         $response = $signedResponse->getMessage();
-        return $response['Response'];
+        return array_key_exists('Response', $response) ? $response['Response'] : null;
     }
 
     private function getCert()
