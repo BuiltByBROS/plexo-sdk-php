@@ -21,7 +21,7 @@
     * Amount : monto del item
     * ClientItemReferenceId : ID del item
   * **PaymentInstrumentInput** (PaymentInstrumentInput)
-  * **OptionalPointOfSale** *opcional* (string)
+  * **OptionalCommerceId** *opcional* (int)
   * **OptionalMetadata** *opcional* (string)
 
 ## Ejemplo
