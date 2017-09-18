@@ -105,22 +105,23 @@ $client = new Sdk\Client([
 
 ## Clase Plexo\\Sdk\\Client
 
-### Sinopsis de la Clase
+### Métodos
 
-```
-Plexo\Sdk\Client {
-    public __construct ( [ array $options ] )
-    public string Authorize ( array $auth )
-    public <type> GetSupportedIssuers( )
-    public <type> Purchase ( array $payment )
-    public <type> Cancel ( array $cancel )
-    public array GetServerPublicKey ( string $fingerprint )
-}
-```
-
-**Plexo\\Sdk\\Client**
 * [Authorize](doc/Client/Authorize.md)
-* [GetSupportedIssuers](doc/Client/GetSupportedIssuers.md)
 * [Purchase](doc/Client/Purchase.md)
 * [Cancel](doc/Client/Cancel.md)
+* [StartReserve](doc/Client/StartReserve.md)
+* [EndReserve](doc/Client/EndReserve.md)
+* [Status](doc/Client/Status.md)
+* [GetInstruments](doc/Client/GetInstruments.md)
+* [DeleteInstrument](doc/Client/DeleteInstrument.md)
+* [GetSupportedIssuers](doc/Client/GetSupportedIssuers.md)
+* [GetCommerces](doc/Client/GetCommerces.md)
+* [AddCommerce](doc/Client/AddCommerce.md)
+* [ModifyCommerce](doc/Client/ModifyCommerce.md)
+* [DeleteCommerce](doc/Client/DeleteCommerce.md)
+* [SetDefaultCommerce](doc/Client/SetDefaultCommerce.md)
+* [GetCommerceIssuers](doc/Client/GetCommerceIssuers.md)
+* [AddIssuerCommerce](doc/Client/AddIssuerCommerce.md)
+* [DeleteIssuerCommerce](doc/Client/DeleteIssuerCommerce.md)
 * [GetServerPublicKey](doc/Client/GetServerPublicKey.md)

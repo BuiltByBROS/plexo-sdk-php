@@ -1,6 +1,6 @@
 # ModifyCommerce
 
-> public *array* **Plexo\\Sdk\\Client::ModifyCommerce** ( *array* $commerce )
+> public *Plexo\\Sdk\\Models\\Commerce* **Plexo\\Sdk\\Client::ModifyCommerce** ( *array* $commerce )
 
 ## Ejemplo
 
@@ -18,7 +18,7 @@ try {
         'CommerceId' => 80,
         'Name' => 'Nuevo nombre'
     ]);
-    print_r($response);
+    printf("ID: %d, Nombre: %s\n", $commerce->CommerceId, $commerce->Name);
 } catch (Sdk\Exception\PlexoException $exc) {
     printf("[%s] (%d) %s\n", get_class($exc), $exc->getCode(), $exc->getMessage());
 }
@@ -28,19 +28,5 @@ try {
 ### Imprime
 
 ```
-Array
-(
-    [0] => Array
-        (
-            [CommerceId] => 9
-            [Name] => Comercio A
-        )
-
-    [1] => Array
-        (
-            [CommerceId] => 13
-            [Name] => Comercio B
-        )
-
-)
+ID: 80, Nombre: Nuevo nombre
 ```
