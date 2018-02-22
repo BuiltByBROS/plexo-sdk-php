@@ -82,11 +82,11 @@ class Client implements SecurePaymentGatewayInterface
     public function Purchase($payment)
     {
         if (is_array($payment)) {
-            $payment = new Message\PaymentRequest($payment);
+            $payment = Models\PaymentRequest::fromArray($payment);
             $payment->client = $this->_getClientName();
         }
-        if (!($payment instanceof Message\PaymentRequest)) {
-            throw new \Exception('$payment debe ser del tipo array o \Plexo\Sdk\Message\PaymentRequest');// FIXME
+        if (!($payment instanceof Models\PaymentRequest)) {
+            throw new \Exception('$payment debe ser del tipo array o \Plexo\Sdk\Models\PaymentRequest');// FIXME
         }
         return $this->_exec('POST', 'Operation/Purchase', $payment);
     }
@@ -412,14 +412,15 @@ class Client implements SecurePaymentGatewayInterface
             $signedRequest->setClient($this->_getClientName());
             $cert = $this->getCert();
             $signedRequest->sign($cert);
-//print_r($signedRequest->toArray());
-//exit;
+var_dump($message);
+var_dump($signedRequest->toArray());
             $options = [
                 'headers' => [
                     'Content-Type' => 'application/json; charset=UTF-8',
                 ],
                 'json' => $signedRequest->toArray(),
             ];
+//var_dump($message, $signedRequest->toArray());
         }
         $this->logger->debug('Sending Request', [$http_method, $path, $options]);
         try {

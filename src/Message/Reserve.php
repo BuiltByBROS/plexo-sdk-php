@@ -6,12 +6,6 @@ use Plexo\Sdk;
 class Reserve extends Sdk\Message // Reference
 {
     /**
-     *
-     * @var string
-     */
-    public $client;
-
-    /**
      * @var bool $Commit
      * @var ReferenceType $Type
      * @var string $MetaReference
@@ -37,11 +31,10 @@ class Reserve extends Sdk\Message // Reference
                 'MetaReference' => $this->MetaReference,
                 'Type' => $this->Type,
             ];
-var_dump($arr);
-        $data = [
-            'Client' => $this->client,
-            'Request' => $arr,
-        ];
-        return $data;
+//        $data = [
+//            'Client' => $this->client,
+//            'Request' => $arr,
+//        ];
+        return $arr;
     }
 }
