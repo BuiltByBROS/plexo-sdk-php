@@ -8,12 +8,6 @@ use Plexo\Sdk;
 class Authorization extends Sdk\Message
 {
     /**
-     *
-     * @var string
-     */
-    public $client;
-    
-    /**
      * @var int $Action              Action type defined in Sdk\ActionType
      * @var int $Type                Authorization type defined in Sdk\Type\AuthorizationType 
      * @var string $MetaReference 
@@ -169,10 +163,6 @@ class Authorization extends Sdk\Message
             }
             $arr['ClientInformation'] = $clientInformation;
         }
-        $data = [
-            'Client' => $this->client,
-            'Request' => $arr,
-        ];
-        return $data;
+        return $arr;
     }
 }
