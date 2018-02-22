@@ -6,12 +6,6 @@ use Plexo\Sdk;
 class Commerce extends Sdk\Message
 {
     /**
-     *
-     * @var string
-     */
-    public $client;
-    
-    /**
      * @var int $CommerceId
      * @var string $Name
      */
@@ -24,10 +18,10 @@ class Commerce extends Sdk\Message
     public function toArray($canonize = false)
     {
         $arr = array_filter($this->to_array());
-        $data = [
-            'Client' => $this->client,
-            'Request' => $arr,
-        ];
-        return $data;
+//        $data = [
+//            'Client' => $this->client,
+//            'Request' => $arr,
+//        ];
+        return $arr;
     }
 }
