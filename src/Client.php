@@ -133,7 +133,7 @@ class Client implements SecurePaymentGatewayInterface
     public function GetInstruments($info)
     {
         if (is_array($info)) {
-            $info = new Message\AuthorizationInfo($info);
+            $info = new Models\AuthorizationInfo($info);
         }
         return $this->_exec('POST', 'Instruments', $info);
     }
