@@ -118,7 +118,7 @@ class Authorization extends Sdk\Message
             ],
             'MetaReference' => [
                 'type' => 'string',
-                'required' => true,
+                'required' => false,
             ],
            'RedirectUri' => [
                 'type' => 'string',
@@ -159,6 +159,10 @@ class Authorization extends Sdk\Message
     
     public function toArray($canonize = false)
     {
+        $errors = $this->validate();
+        if ($errors) {
+            throw current($errors);
+        }
 //        $scheme = self::getValidationMetadata();
         $arr = $this->to_array();
         if (is_array($arr['ClientInformation'])) {
