@@ -165,7 +165,7 @@ class Client implements SecurePaymentGatewayInterface
 
     public function GetSupportedIssuers()
     {
-        return $this->_exec('POST', 'Issuer', []);
+        return $this->_exec('POST', 'Issuer');
     }
 
     // Commerces
@@ -176,7 +176,7 @@ class Client implements SecurePaymentGatewayInterface
      */
     public function GetCommerces()
     {
-        $commerces = $this->_exec('POST', 'Commerce', []);
+        $commerces = $this->_exec('POST', 'Commerce');
         return array_map(function($item) {
             return new Models\Commerce($item);
         }, $commerces);
@@ -287,7 +287,8 @@ class Client implements SecurePaymentGatewayInterface
         if (!($query instanceof Models\TransactionQuery)) {
             throw new Exception\PlexoException('$query debe ser del tipo array o \Plexo\Sdk\Models\TransactionQuery');// FIXME
         }
-        return new Models\TransactionCursor($this->_exec('POST', 'Transactions', $query));
+        return $this->_exec('POST', 'Transactions', $query);
+//        return new Models\TransactionCursor($this->_exec('POST', 'Transactions', $query));
     }
 
     /**
@@ -403,11 +404,11 @@ class Client implements SecurePaymentGatewayInterface
     {
         $options = array();
         if ($http_method === 'POST') {
-            if (is_array($message)) {
-                $message['Client'] = $this->_getClientName();
-            } else {
-                $message->client = $this->_getClientName();
-            }
+//            if (is_array($message)) {
+//                $message['Client'] = $this->_getClientName();
+//            } else {
+////                $message->client = $this->_getClientName();
+//            }
             $signedRequest = new SignedRequest($message);
             $signedRequest->setClient($this->_getClientName());
             $cert = $this->getCert();

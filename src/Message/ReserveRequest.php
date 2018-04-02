@@ -6,24 +6,18 @@ use Plexo\Sdk;
 class ReserveRequest extends Sdk\Message
 {
     /**
-     *
-     * @var string
-     */
-    public $client;
-
-    /**
-     * @var List<TimeLimit> $AdditionalRequirements
+     * @var array List<TimeLimit> $AdditionalRequirements
      * @var int $AnonInstrumentUsageTimeLimit
-     * @var List<AmountLimit> $CreditLimits
+     * @var array List<AmountLimit> $CreditLimits
      * @var int $ExpirationUTC
      * @var long $InstrumentExpirationUTC
-     * @var Dictionary<FieldType,string> $InstrumentInformation
+     * @var array Dictionary<FieldType,string> $InstrumentInformation
      * @var string $InstrumentToken
      * @var IssuerInfo $Issuer
      * @var string $Name
      * @var string $SessionCreationId
      * @var CardStatus $Status
-     * @var List<Currency> $SupportedCurrencies
+     * @var array List<Currency> $SupportedCurrencies
      */
 
     protected $data = [
@@ -43,11 +37,26 @@ class ReserveRequest extends Sdk\Message
 
     public function toArray($canonize = false)
     {
-        $arr = $this->to_array();
-        $data = [
-            'Client' => $this->client,
-            'Request' => $arr,
+        $arr = $this->data;
+//        $data = [
+//            'Client' => $this->client,
+//            'Request' => $arr,
+//        ];
+        return [
+            'AdditionalRequirements' => array_map(function ($item) {
+                return ($item instanceof Sdk\Models\TimeLimit) ? $item->toArray() : $item;
+            }, $this->data['AdditionalRequirements']),
+            'AnonInstrumentUsageTimeLimit' => $this->data['AnonInstrumentUsageTimeLimit'],
+            'CreditLimits' => $this->data['CreditLimits'],
+            'ExpirationUTC' => $this->data['ExpirationUTC'],
+            'InstrumentExpirationUTC' => $this->data['InstrumentExpirationUTC'],
+            'InstrumentInformation' => $this->data['InstrumentInformation'],
+            'InstrumentToken' => $this->data['InstrumentToken'],
+            'Issuer' => $this->data['Issuer'],
+            'Name' => $this->data['Name'],
+            'SessionCreationId' => $this->data['SessionCreationId'],
+            'Status' => $this->data['Status'],
+            'SupportedCurrencies' => $this->data['SupportedCurrencies'],
         ];
-        return $data;
     }
 }
