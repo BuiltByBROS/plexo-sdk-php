@@ -1,6 +1,8 @@
 <?php
 namespace Plexo\Sdk;
 
+use Plexo\Sdk\Exception;
+
 //use Symfony\Component\Validator\Validation;
 
 abstract class Message implements MessageInterface
@@ -19,9 +21,9 @@ abstract class Message implements MessageInterface
         $errors = [];
         foreach ($scheme as $key => $val) {
             if ($val['required'] && empty($this->data[$key])) {
-                array_push($errors, new \ErrorException(sprintf('%s cannot be empty', $key)));
+                array_push($errors, new Exception\InvalidArgumentException(sprintf('%s cannot be empty', $key)));
             } elseif (!is_null($this->data[$key]) && !call_user_func('is_' . $val['type'], $this->data[$key])) {
-                array_push($errors, new \ErrorException(sprintf('%s must be of type %s', $key, $val['type'])));
+                array_push($errors, new Exception\InvalidArgumentException(sprintf('%s must be of type %s', $key, $val['type'])));
             }
         }
         return count($errors) ? $errors : false;
