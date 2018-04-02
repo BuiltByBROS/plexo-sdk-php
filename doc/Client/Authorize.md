@@ -21,7 +21,7 @@ obteniendo como resultado una sesión de usuario.
     * SESSION_EXTEND_AMOUNT
     * CLIENT_EXTEND_AMOUNT
   * **RedirectUri** (string)
-  * **OptionalMetadata** *opcional*
+  * **OptionalMetadata** *opcional* *string*
   * **ClientInformation** *opcional* (array)
   * **DoNotUseCallback** *bool*
   * **LimitIssuers** *opcional*
