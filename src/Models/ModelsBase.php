@@ -36,7 +36,6 @@ abstract class ModelsBase implements \ArrayAccess
         foreach ($data as $k => $v) {
             $k = ucfirst($k);
             $setter = 'set'.$k;
-var_dump($setter);
             if (method_exists($inst, $setter)) {
                 call_user_func([$inst, $setter], $v);
             } else {

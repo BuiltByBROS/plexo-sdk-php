@@ -19,7 +19,6 @@ class PaymentInstrumentInput implements PlexoModelInterface
     public $UseExtendedClientCreditIfAvailable = false;
 
     /**
-     * 
      * @param array $params
      */
     public function __construct(array $params = []) {

@@ -49,6 +49,15 @@ class TransactionOrder extends ModelsBase
         $this->Direction = $direction;
     }
 
+    public static function fromArray($array)
+    {
+        $inst = new self();
+        foreach ($array as $k => $v) {
+            $inst->{$k} = $v;
+        }
+        return $inst;
+    }
+
     public function toArray()
     {
         return [

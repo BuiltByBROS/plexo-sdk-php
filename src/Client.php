@@ -83,7 +83,6 @@ class Client implements SecurePaymentGatewayInterface
     {
         if (is_array($payment)) {
             $payment = Models\PaymentRequest::fromArray($payment);
-            $payment->client = $this->_getClientName();
         }
         if (!($payment instanceof Models\PaymentRequest)) {
             throw new \Exception('$payment debe ser del tipo array o \Plexo\Sdk\Models\PaymentRequest');// FIXME
@@ -102,14 +101,16 @@ class Client implements SecurePaymentGatewayInterface
         return $this->_exec('POST', 'Operation/Cancel', $payment);
     }
 
-    //[WebInvoke(UriTemplate = "Operation/StartReserve", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST")]
-    //Task<ServerResponse<Transaction>> StartReserve(ReserveRequest payment);
+    /**
+     * @param array $payment
+     * @return \Plexo\Sdk\Models\Transaction
+     */
     public function StartReserve($payment)
     {
         if (is_array($payment)) {
-            $payment = new Message\ReserveRequest($payment);
+            $payment = Models\ReserveRequest::fromArray($payment);
         }
-        return $this->_exec('POST', 'Operation/StartReserve', $payment);
+        return new Models\Transaction($this->_exec('POST', 'Operation/StartReserve', $payment));
     }
 
     public function EndReserve($reserve)
@@ -157,7 +158,6 @@ class Client implements SecurePaymentGatewayInterface
         if (is_array($request)) {
             $request = Models\CreateBankInstrumentRequest::fromArray($request);
         }
-//var_dump($request->toArray());
         return new Models\PaymentInstrument($this->_exec('POST', 'Instruments/Bank', $request));
     }
 
@@ -342,7 +342,6 @@ class Client implements SecurePaymentGatewayInterface
         }
         // new Transaction
         return $this->_exec('POST', 'Code', $request);
-        
     }
 
     private function configureDefaults(array $config)
@@ -413,15 +412,12 @@ class Client implements SecurePaymentGatewayInterface
             $signedRequest->setClient($this->_getClientName());
             $cert = $this->getCert();
             $signedRequest->sign($cert);
-var_dump($message);
-var_dump($signedRequest->toArray());
             $options = [
                 'headers' => [
                     'Content-Type' => 'application/json; charset=UTF-8',
                 ],
                 'json' => $signedRequest->toArray(),
             ];
-//var_dump($message, $signedRequest->toArray());
         }
         $this->logger->debug('Sending Request', [$http_method, $path, $options]);
         try {
