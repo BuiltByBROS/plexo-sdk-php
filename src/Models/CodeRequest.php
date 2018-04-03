@@ -20,14 +20,16 @@ class CodeRequest extends ModelsBase
      */
     public $Action = self::CODE_ACTION_QUERY;
 
+    public function __construct($code = null, $action = 0) {
+        $this->Code = $code;
+        $this->Action = $action;
+    }
+
     public function toArray()
     {
         $data = [
-            'Client' => $this->client,
-            'Request' => [
-                'Action' => $this->Action,
-                'Code' => $this->Code,
-            ],
+            'Action' => $this->Action,
+            'Code' => $this->Code,
         ];
         return $data;
     }

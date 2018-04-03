@@ -1,7 +1,7 @@
 <?php
 namespace Plexo\Sdk\Models;
 
-class FinancialInclusion implements PlexoModelInterface
+class FinancialInclusion extends ModelsBase//implements PlexoModelInterface
 {
     /**
      * @var float

@@ -1,9 +1,8 @@
 <?php
 namespace Plexo\Sdk\Models;
 
-class Item implements PlexoModelInterface
+class Item extends ModelsBase// implements PlexoModelInterface
 {
-    
     /**
      *
      * @var float

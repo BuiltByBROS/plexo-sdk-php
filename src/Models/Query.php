@@ -61,14 +61,45 @@ class Query
      *
      * @var array List<Query>
      */
-    public $SubQueries;
+    public $SubQueries = [];
 
     public function __construct($query_operator = null, $field = null, $operator = null, $value = null, $sub_queries = null) {
         $this->QueryOperator = $query_operator;
         $this->Field = $field;
         $this->Operator = $operator;
         $this->Value = $value;
-        $this->SubQueries = $sub_queries;
+        if ($sub_queries) {
+            $this->SubQueries = $sub_queries;
+        }
+    }
+
+    public function addSubQuery($query)
+    {
+        array_push($this->SubQueries, ($query instanceof Query ? $query : Query::fromArray($query)));
+        return $this;
+    }
+
+    public function setSubQueries($value)
+    {
+        $this->SubQueries = [];
+        foreach ($value as $query) {
+            $this->addSubQuery($query);
+        }
+        return $this;
+    }
+
+    public static function fromArray(array $array)
+    {
+        $inst = new self();
+        foreach ($array as $k => $v) {
+            $method_name = 'set'.$k;
+            if (method_exists($inst, $method_name)) {
+                call_user_func([$inst, $method_name], $v);
+            } else {
+                $inst->{$k} = $v;
+            }
+        }
+        return $inst;
     }
 
     public function toArray() {
@@ -76,7 +107,9 @@ class Query
             'Field' => $this->Field,
             'Operator' => $this->Operator,
             'QueryOperator' => $this->QueryOperator,
-            'SubQueries' => $this->SubQueries,
+            'SubQueries' => array_map(function ($query) {
+                return $query->toArray();
+            }, $this->SubQueries),
             'Value' => $this->Value,
         ];
     }

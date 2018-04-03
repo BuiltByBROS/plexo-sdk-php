@@ -27,13 +27,14 @@ class CreateBankInstrumentRequest extends ModelsBase
 
     public function toArray($canonize = false)
     {
+        $instrumentData = [];
+        foreach ($this->InstrumentData as $item) {
+            $instrumentData[$item->getParamKey()] = $item->getValue();
+        }
         $data = [
-//            'Client' => $this->client,
-//            'Request' => [
-                'InstrumentData' => $this->InstrumentData,
-                'IssuerId' => $this->IssuerId,
-                'User' => $this->User->toArray(),
-//            ],
+            'InstrumentData' => $instrumentData,
+            'IssuerId' => $this->IssuerId,
+            'User' => $this->User->toArray(),
         ];
         return $data;
     }

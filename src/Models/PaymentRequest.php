@@ -74,6 +74,21 @@ class PaymentRequest extends ModelsBase
         ];
     }
 
+    public function addItem($item)
+    {
+        array_push($this->data['Items'], ($item instanceof Item ? $item : Item::fromArray($item)));
+        return $this;
+    }
+
+    public function setItems(array $value)
+    {
+        $this->data['Items'] = [];
+        foreach ($value as $item) {
+            $this->addItem($item);
+        }
+        return $this;
+    }
+
     public static function fromArray($data)
     {
         $inst = new self();
@@ -98,14 +113,15 @@ class PaymentRequest extends ModelsBase
                 $arr['TipAmount'] = sprintf('float(%.1f)', $arr['TipAmount']);
             }
         }
+        if ($this->data['Items']) {
+            $arr['Items'] = array_map(function ($item) use ($canonize) {
+                return ($item instanceof Item) ? $item->toArray($canonize) : $item;
+            }, $this->data['Items']);
+        }
         //return array_filter($this->data, function ($v, $k) use ($scheme) {
         //    return ($scheme[$k]['required'] && !is_null($v));
         //}, ARRAY_FILTER_USE_BOTH);
         //        $scheme = self::getValidationMetadata();
-//        $data = [
-//            'Client' => $this->client,
-//            'Request' => $arr,
-//        ];
         return $arr;
     }
 }

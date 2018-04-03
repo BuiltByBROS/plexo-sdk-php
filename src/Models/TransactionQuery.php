@@ -40,21 +40,21 @@ class TransactionQuery extends ModelsBase
     public function __construct(array $data = null)
     {
         if ($data) {
-            if (array_key_exists('queries', $data)) {
+            if (array_key_exists('Queries', $data)) {
                 $this->Queries = array_map(function ($item) {
-                    return new Query($item);
-                }, $data['queries']);
+                    return Query::fromArray($item);
+                }, $data['Queries']);
             }
-            if (array_key_exists('order', $data)) {
+            if (array_key_exists('Order', $data)) {
                 $this->Order = array_map(function ($item) {
-                    return new TransactionOrder($item);
-                }, $data['order']);
+                    return TransactionOrder::fromArray($item);
+                }, $data['Order']);
             }
-            if (array_key_exists('limit', $data)) {
-                $this->Limit = $data['limit'];
+            if (array_key_exists('Limit', $data)) {
+                $this->Limit = $data['Limit'];
             }
-            if (array_key_exists('skip', $data)) {
-                $this->Skip = $data['skip'];
+            if (array_key_exists('Skip', $data)) {
+                $this->Skip = $data['Skip'];
             }
         }
     }
@@ -63,12 +63,12 @@ class TransactionQuery extends ModelsBase
     {
         $data = [
             'Limit'   => $this->Limit,
-//            'Order' => array_map(function ($item) {
-//                    return $item->toArray();
-//                }, $this->Order),
-//                'Queries' => array_map(function ($item) {
-//                    return $item->toArray();
-//                }, $this->Queries),
+            'Order' => array_map(function ($item) {
+                return $item->toArray();
+            }, $this->Order),
+            'Queries' => array_map(function ($item) {
+                return $item->toArray();
+            }, $this->Queries),
             'Skip'    => $this->Skip,
         ];
         return $data;
