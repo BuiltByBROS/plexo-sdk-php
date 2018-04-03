@@ -2,11 +2,15 @@
 namespace Plexo\Sdk\Message;
 
 use Plexo\Sdk;
-//use Symfony\Component\Validator\Mapping\ClassMetadata;
-//use Symfony\Component\Validator\Constraints as Assert;
 
-class Authorization extends Sdk\Message
+class ClientSignedRequest extends Sdk\Message
 {
+    /**
+     *
+     * @var string
+     */
+    public $client;
+    
     /**
      * @var int $Action              Action type defined in Sdk\ActionType
      * @var int $Type                Authorization type defined in Sdk\Type\AuthorizationType 
@@ -112,7 +116,7 @@ class Authorization extends Sdk\Message
             ],
             'MetaReference' => [
                 'type' => 'string',
-                'required' => false,
+                'required' => true,
             ],
            'RedirectUri' => [
                 'type' => 'string',
@@ -153,10 +157,6 @@ class Authorization extends Sdk\Message
     
     public function toArray($canonize = false)
     {
-        $errors = $this->validate();
-        if ($errors) {
-            throw current($errors);
-        }
 //        $scheme = self::getValidationMetadata();
         $arr = $this->to_array();
         if (is_array($arr['ClientInformation'])) {
@@ -167,6 +167,10 @@ class Authorization extends Sdk\Message
             }
             $arr['ClientInformation'] = $clientInformation;
         }
-        return $arr;
+        $data = [
+            'Client' => $this->client,
+            'Request' => $arr,
+        ];
+        return $data;
     }
 }

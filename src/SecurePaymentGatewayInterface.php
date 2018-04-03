@@ -19,6 +19,8 @@ interface SecurePaymentGatewayInterface
 
     public function DeleteInstrument($info);
 
+    public function CreateBankInstrument($request);
+
     public function GetSupportedIssuers();
 
     public function GetCommerces();
@@ -37,5 +39,11 @@ interface SecurePaymentGatewayInterface
 
     public function DeleteIssuerCommerce($commerce);
 
+    public function ObtainTransactions($query);
+
+    public function ObtainCSVTransactions($query);
+
     public function GetServerPublicKey($fingerprint);
+
+    public function CodeAction($request);
 }

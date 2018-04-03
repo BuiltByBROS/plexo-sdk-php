@@ -1,15 +1,15 @@
 <?php
 namespace Plexo\Sdk\Models;
 
-class PaymentInstrumentInput implements PlexoModelInterface
+class PaymentInstrument implements PlexoModelInterface
 {
     /**
      * @var string 
      */
     public $InstrumentToken;
-    
+
     /**
-     * @var Dictionary<FieldType,string>
+     * @var Dictionary<FieldType, string>
      */
     public $NonStorableItems;
 
@@ -19,6 +19,7 @@ class PaymentInstrumentInput implements PlexoModelInterface
     public $UseExtendedClientCreditIfAvailable = false;
 
     /**
+     * 
      * @param array $params
      */
     public function __construct(array $params = []) {

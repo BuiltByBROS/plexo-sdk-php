@@ -25,10 +25,10 @@ class DeleteInstrumentRequest extends Sdk\Message // Reference
     public function toArray($canonize = false)
     {
         $arr = $this->to_array();
-        $data = [
-            'Client' => $this->client,
-            'Request' => $arr,
-        ];
-        return $data;
+//        $data = [
+//            'Client' => $this->client,
+//            'Request' => $arr,
+//        ];
+        return $arr;
     }
 }

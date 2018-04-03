@@ -1,16 +1,8 @@
 <?php
-namespace Plexo\Sdk\Message;
+namespace Plexo\Sdk\Models;
 
-use Plexo\Sdk;
-
-class PaymentRequest extends Sdk\Message
+class PaymentRequest extends ModelsBase
 {
-    /**
-     *
-     * @var string
-     */
-    public $client;
-
     /**
      * @var string $ClientReferenceId
      * @var PaymentInstrumentInput $PaymentInstrumentInput
@@ -82,23 +74,54 @@ class PaymentRequest extends Sdk\Message
         ];
     }
 
+    public function addItem($item)
+    {
+        array_push($this->data['Items'], ($item instanceof Item ? $item : Item::fromArray($item)));
+        return $this;
+    }
+
+    public function setItems(array $value)
+    {
+        $this->data['Items'] = [];
+        foreach ($value as $item) {
+            $this->addItem($item);
+        }
+        return $this;
+    }
+
+    public static function fromArray($data)
+    {
+        $inst = new self();
+        foreach ($data as $k => $v) {
+            $k = ucfirst($k);
+            $setter = 'set'.$k;
+            if (method_exists($inst, $setter)) {
+                call_user_func([$inst, $setter], $v);
+            } else {
+                $inst->data[$k] = $v;
+            }
+        }
+        return $inst;
+    }
+
     public function toArray($canonize = false)
     {
 //        $scheme = self::getValidationMetadata();
-        $arr = $this->to_array();
+        $arr = $this->data;
         if ($canonize) {
             if (!is_null($arr['TipAmount'])) {
                 $arr['TipAmount'] = sprintf('float(%.1f)', $arr['TipAmount']);
             }
         }
+        if ($this->data['Items']) {
+            $arr['Items'] = array_map(function ($item) use ($canonize) {
+                return ($item instanceof Item) ? $item->toArray($canonize) : $item;
+            }, $this->data['Items']);
+        }
         //return array_filter($this->data, function ($v, $k) use ($scheme) {
         //    return ($scheme[$k]['required'] && !is_null($v));
         //}, ARRAY_FILTER_USE_BOTH);
         //        $scheme = self::getValidationMetadata();
-        $data = [
-            'Client' => $this->client,
-            'Request' => $arr,
-        ];
-        return $data;
+        return $arr;
     }
 }

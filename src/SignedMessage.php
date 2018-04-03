@@ -1,8 +1,9 @@
 <?php
 namespace Plexo\Sdk;
 
-class SignedMessage {
-
+class SignedMessage
+{
+    protected $client;
     protected $fingerprint;
     protected $object;
     protected $utcUnixTimeExpiration;
@@ -31,6 +32,10 @@ class SignedMessage {
         }
     }
 
+    public function setClient($client) {
+        $this->client = $client;
+    }
+
     public function setExpirationTime($expirationTime)
     {
         $this->utcUnixTimeExpiration = $expirationTime;
@@ -50,7 +55,7 @@ class SignedMessage {
         $object = array_key_exists('Object', $signed_json['Object']) ? $signed_json['Object']['Object'] : null;
         return new self($object, $fingerprint, $utcUnixTimeExpiration, $signature);
     }
-    
+
     public function toArray($canonize = false)
     {
         $arr = [
@@ -67,9 +72,16 @@ class SignedMessage {
                     'ErrorMessage' => $this->object->getMessage(),
                 ];
             } else {
-                $arr['Object']['Object'] = is_array($this->object) ? $this->object : $this->object->toArray($canonize);
-                $arr['Object']['Object'] = Utilities\functions\array_filter_recursive($arr['Object']['Object'], $canonize);
+                $object = [
+                    'Client' => $this->client,
+                    'Request' => is_array($this->object) ? $this->object : $this->object->toArray($canonize),
+                ];
+                $arr['Object']['Object'] = Utilities\functions\array_filter_recursive($object, $canonize);
             }
+        } else {
+            $arr['Object']['Object'] = [
+                'Client' => $this->client,
+            ];
         }
         return $arr;
     }
@@ -104,7 +116,7 @@ class SignedMessage {
         }
         $this->signature = base64_encode($signature);
     }
-    
+
     public function verify($cert)
     {
         $base_string = $this->getSignatureBaseString();
@@ -135,7 +147,7 @@ class SignedMessage {
             throw new Exception\SignatureException('Firma inválida');
         }
     }
-    
+
     public function __toString()
     {
         return str_replace('\/', '/', json_encode($this->toArray()));
