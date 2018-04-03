@@ -1,4 +1,4 @@
-# Plexo SDK para PHP - Versión 0.2.0
+# Plexo SDK para PHP - Versión 0.3.0
 
 **Plexo** es un repositorio de medios de pago. Su objetivo es facilitar la utilización de estos instrumentos permitiendo desacoplar toda
 complejidad asociada a la integración con los medios de pago.
