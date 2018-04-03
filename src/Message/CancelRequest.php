@@ -6,12 +6,6 @@ use Plexo\Sdk;
 class CancelRequest extends Sdk\Message
 {
     /**
-     *
-     * @var string
-     */
-    public $client;
-
-    /**
      * @var int $Type
      * @var string $ClientReferenceId
      * @var string $MetaReference
@@ -26,10 +20,10 @@ class CancelRequest extends Sdk\Message
     public function toArray($canonize = false)
     {
         $arr = $this->to_array();
-        $data = [
-            'Client' => $this->client,
-            'Request' => $arr,
-        ];
-        return $data;
+//        $data = [
+//            'Client' => $this->client,
+//            'Request' => $arr,
+//        ];
+        return $arr;
     }
 }

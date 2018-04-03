@@ -1,8 +1,6 @@
 <?php
 namespace Plexo\Sdk\Models;
 
-use Plexo\Sdk;
-
 class Commerce
 {
     /**

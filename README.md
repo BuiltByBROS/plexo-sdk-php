@@ -107,6 +107,7 @@ $client = new Sdk\Client([
 
 ### Métodos
 
+* [__construct](doc/Client/construct.md)
 * [Authorize](doc/Client/Authorize.md)
 * [Purchase](doc/Client/Purchase.md)
 * [Cancel](doc/Client/Cancel.md)

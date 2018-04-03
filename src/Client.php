@@ -1,15 +1,22 @@
 <?php
 namespace Plexo\Sdk;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 class Client implements SecurePaymentGatewayInterface
 {
-    const VERSION = '0.2.0';
+    const VERSION = '0.3.0';
+    const CREDENTIALS_FINGERPRINT     = 1;
+    const CREDENTIALS_PEM_FINGERPRINT = 2;
+    const CREDENTIALS_PFX_PASSPHRASE  = 3;
+    
     private $http_client;
     private $config;
     private $serverCert;
-    
+    private $logger;
+
     private static $env = [
-        'test' => 'http://testing.plexo.com.uy/plexoapi/SecurePaymentGateway.svc/',
+        'test' => 'http://testing2.plexo.com.uy/plexoapi/SecurePaymentGateway.svc/',
         'prod' => 'http://www.plexo.com.uy/plexoapi/SecurePaymentGateway.svc/',
     ];
 
@@ -20,17 +27,35 @@ class Client implements SecurePaymentGatewayInterface
     public function __construct(array $options = [])
     {
         $this->configureDefaults($options);
+        $this->setLogger($this->config['logger']);
         if (!array_key_exists($this->config['env'], self::$env)) {
-            throw new Exception\ConfigurationException(sprintf("Entorno '%s' no válido. Los entornos disponibles son: 'prod' y 'test'.", $this->config['env']));
+            $error_message = sprintf("Entorno '%s' no válido. Los entornos disponibles son: 'prod' y 'test'.", $this->config['env']);
+            $this->logger->critical($error_message);
+            throw new Exception\ConfigurationException($error_message);
         }
         $this->http_client = new \GuzzleHttp\Client([
-            'base_uri' => self::$env[$this->config['env']],
+            'base_uri' => $this->config['base_uri'] ? $this->config['base_uri'] : self::$env[$this->config['env']],
             'headers' => [
                 'User-Agent' => sprintf('PlexoSdk/%s %s', self::VERSION, \GuzzleHttp\default_user_agent()),
                 'Accept'     => 'application/json',
             ],
         ]);
+        $this->logger->debug('Constructor options', $this->config);
     }
+
+    /**
+     * @since 0.3.0
+     * @param null|LoggerInterface $logger
+     */
+    public function setLogger(LoggerInterface $logger = null)
+    {
+        if (is_null($logger)) {
+            $logger = new NullLogger();
+        }
+        $this->logger = $logger;
+    }
+
+    // Operations
 
     /**
      *
@@ -42,7 +67,6 @@ class Client implements SecurePaymentGatewayInterface
     {
         if (is_array($auth)) {
             $auth = new Message\Authorization($auth);
-            $auth->client = $this->_getClientName();
         }
         if (!($auth instanceof Message\Authorization)) {
             throw new Exception\PlexoException('$auth debe ser del tipo array o \Plexo\Sdk\Message\Authorization');// FIXME
@@ -58,11 +82,10 @@ class Client implements SecurePaymentGatewayInterface
     public function Purchase($payment)
     {
         if (is_array($payment)) {
-            $payment = new Message\PaymentRequest($payment);
-            $payment->client = $this->_getClientName();
+            $payment = Models\PaymentRequest::fromArray($payment);
         }
-        if (!($payment instanceof Message\PaymentRequest)) {
-            throw new \Exception('$payment debe ser del tipo array o \Plexo\Sdk\Message\PaymentRequest');// FIXME
+        if (!($payment instanceof Models\PaymentRequest)) {
+            throw new \Exception('$payment debe ser del tipo array o \Plexo\Sdk\Models\PaymentRequest');// FIXME
         }
         return $this->_exec('POST', 'Operation/Purchase', $payment);
     }
@@ -71,7 +94,6 @@ class Client implements SecurePaymentGatewayInterface
     {
         if (is_array($payment)) {
             $payment = new Message\CancelRequest($payment);
-            $payment->client = $this->_getClientName();
         }
         if (!($payment instanceof Message\CancelRequest)) {
             throw new \Exception('$payment debe ser del tipo array o \Plexo\Sdk\Message\CancelRequest');// FIXME
@@ -79,22 +101,22 @@ class Client implements SecurePaymentGatewayInterface
         return $this->_exec('POST', 'Operation/Cancel', $payment);
     }
 
-    //[WebInvoke(UriTemplate = "Operation/StartReserve", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, Method = "POST")]
-    //Task<ServerResponse<Transaction>> StartReserve(ReserveRequest payment);
+    /**
+     * @param array $payment
+     * @return \Plexo\Sdk\Models\Transaction
+     */
     public function StartReserve($payment)
     {
         if (is_array($payment)) {
-            $payment = new Message\ReserveRequest($payment);
-            $payment->client = $this->_getClientName();
+            $payment = Models\ReserveRequest::fromArray($payment);
         }
-        return $this->_exec('POST', 'Operation/StartReserve', $payment);
+        return new Models\Transaction($this->_exec('POST', 'Operation/StartReserve', $payment));
     }
 
     public function EndReserve($reserve)
     {
         if (is_array($reserve)) {
             $reserve = new Message\Reserve($reserve);
-            $reserve->client = $this->_getClientName();
         }
         return $this->_exec('POST', 'Operation/EndReserve', $reserve);
     }
@@ -103,16 +125,16 @@ class Client implements SecurePaymentGatewayInterface
     {
         if (is_array($payment)) {
             $payment = new Message\Reserve($payment);
-            $payment->client = $this->_getClientName();
         }
         return $this->_exec('POST', 'Operation/Status', $payment);
     }
 
+    // Instruments
+
     public function GetInstruments($info)
     {
         if (is_array($info)) {
-            $info = new Message\AuthorizationInfo($info);
-            $info->client = $this->_getClientName();
+            $info = new Models\AuthorizationInfo($info);
         }
         return $this->_exec('POST', 'Instruments', $info);
     }
@@ -122,15 +144,31 @@ class Client implements SecurePaymentGatewayInterface
     {
         if (is_array($info)) {
             $info = new Message\DeleteInstrumentRequest($info);
-            $info->client = $this->_getClientName();
         }
         return $this->_exec('POST', 'Instruments/Delete', $info);
     }
 
+    /**
+     * @since 0.3.0
+     * @param \Plexo\Sdk\Message\CreateBankInstrumentRequest $request
+     * @return \Plexo\Sdk\PaymentInstrument
+     */
+    public function CreateBankInstrument($request)
+    {
+        if (is_array($request)) {
+            $request = Models\CreateBankInstrumentRequest::fromArray($request);
+        }
+        return new Models\PaymentInstrument($this->_exec('POST', 'Instruments/Bank', $request));
+    }
+
+    // Issuers
+
     public function GetSupportedIssuers()
     {
-        return $this->_exec('POST', 'Issuer', ['Client' => $this->$this->_getClientName()]);
+        return $this->_exec('POST', 'Issuer');
     }
+
+    // Commerces
 
     /**
      * 
@@ -138,7 +176,7 @@ class Client implements SecurePaymentGatewayInterface
      */
     public function GetCommerces()
     {
-        $commerces = $this->_exec('POST', 'Commerce', ['Client' => $this->config['client']]);
+        $commerces = $this->_exec('POST', 'Commerce');
         return array_map(function($item) {
             return new Models\Commerce($item);
         }, $commerces);
@@ -154,7 +192,6 @@ class Client implements SecurePaymentGatewayInterface
         if (is_array($commerce)) {
             $commerce = new Message\Commerce($commerce);
             $commerce->CommerceId = null;
-            $commerce->client = $this->_getClientName();
         }
         return new Models\Commerce($this->_exec('POST', 'Commerce/Add', $commerce));
     }
@@ -168,7 +205,6 @@ class Client implements SecurePaymentGatewayInterface
     {
         if (is_array($commerce)) {
             $commerce = new Message\Commerce($commerce);
-            $commerce->client = $this->_getClientName();
         }
         return new Models\Commerce($this->_exec('POST', 'Commerce/Modify', $commerce));
     }
@@ -183,7 +219,6 @@ class Client implements SecurePaymentGatewayInterface
         if (is_array($commerce)) {
             $commerce = new Message\Commerce($commerce);
             $commerce->Name = null;
-            $commerce->client = $this->_getClientName();
         }
         return $this->_exec('POST', 'Commerce/Delete', $commerce);
     }
@@ -198,7 +233,6 @@ class Client implements SecurePaymentGatewayInterface
         if (is_array($commerce)) {
             $commerce = new Message\Commerce($commerce);
             $commerce->Name = null;
-            $commerce->client = $this->_getClientName();
         }
         return $this->_exec('POST', 'Commerce/SetDefault', $commerce);
     }
@@ -208,7 +242,6 @@ class Client implements SecurePaymentGatewayInterface
         if (is_array($commerce)) {
             $commerce = new Message\Commerce($commerce);
             $commerce->Name = null;
-            $commerce->client = $this->_getClientName();
         }
         $issuers = $this->_exec('POST', 'Commerce/Issuer', $commerce);
         return array_map(function($issuer) {
@@ -220,7 +253,6 @@ class Client implements SecurePaymentGatewayInterface
     {
         if (is_array($commerce)) {
             $commerce = new Message\IssuerData($commerce);
-            $commerce->client = $this->_getClientName();
         }
         return new Models\IssuerData($this->_exec('POST', 'Commerce/Issuer/Add', $commerce));
     }
@@ -235,10 +267,48 @@ class Client implements SecurePaymentGatewayInterface
         if (is_array($commerce)) {
             $commerce = new Message\IssuerData($commerce);
             $commerce->Metadata = null;
-            $commerce->client = $this->_getClientName();
         }
         return $this->_exec('POST', 'Commerce/Issuer/Delete', $commerce);
     }
+
+    // TransactionInfo
+
+    /**
+     * @since 0.3.0
+     * @param (array|\Plexo\Models\TransactionQuery) $query
+     * @return \Plexo\Sdk\Models\TransactionCursor
+     * @throws Exception\PlexoException
+     */
+    public function ObtainTransactions($query)
+    {
+        if (is_array($query)) {
+            $query = new Models\TransactionQuery($query);
+        }
+        if (!($query instanceof Models\TransactionQuery)) {
+            throw new Exception\PlexoException('$query debe ser del tipo array o \Plexo\Sdk\Models\TransactionQuery');// FIXME
+        }
+        return $this->_exec('POST', 'Transactions', $query);
+//        return new Models\TransactionCursor($this->_exec('POST', 'Transactions', $query));
+    }
+
+    /**
+     * @since 0.3.0
+     * @param (array|\Plexo\Sdk\Message\TransactionQuery) $query
+     * @return string
+     * @throws Exception\PlexoException
+     */
+    public function ObtainCSVTransactions($query)
+    {
+        if (is_array($query)) {
+            $query = new Models\TransactionQuery($query);
+        }
+        if (!($query instanceof Models\TransactionQuery)) {
+            throw new Exception\PlexoException('$query debe ser del tipo array o \Plexo\Sdk\Models\TransactionQuery');// FIXME
+        }
+        return $this->_exec('POST', 'Transactions/CSV', $query);
+    }
+
+    // Public Key
 
     /**
      *
@@ -254,12 +324,37 @@ class Client implements SecurePaymentGatewayInterface
         return $this->_exec('GET', $path);
     }
 
+    // VerificationCodes
+
+    /**
+     * @since 0.3.0
+     * @param (array|Plexo\Sdk\Models\CodeRequest) $request
+     * @return Plexo\Sdk\Models\Transaction
+     * @throws Exception\PlexoException
+     */
+    public function CodeAction($request)
+    {
+        if (is_array($request)) {
+            $request = Models\CodeRequest::fromArray($request);
+        }
+        if (!($request instanceof Models\CodeRequest)) {
+            throw new Exception\PlexoException('$query debe ser del tipo array o \Plexo\Sdk\Models\CodeRequest');// FIXME
+        }
+        // new Transaction
+        return $this->_exec('POST', 'Code', $request);
+    }
+
     private function configureDefaults(array $config)
     {
         $defaults = [
             'env' => 'test',
             'pkey' => 0,
+            'logger' => null,
+            'base_uri' => null,
         ];
+        if (array_key_exists('base_uri', $config)) {
+            $config['base_uri'] = trim($config['base_uri'], '/') . '/';
+        }
         if ($env = getenv('PLEXO_ENV')) {
             $defaults['env'] = $env;
         }
@@ -280,9 +375,9 @@ class Client implements SecurePaymentGatewayInterface
         }
         $this->config = $config + $defaults;
         if (isset($this->config['privkey_fingerprint'])) {
-            $this->config['pkey'] = isset($this->config['pem_filename']) ? 1 : 2;
+            $this->config['pkey'] = isset($this->config['pem_filename']) ? self::CREDENTIALS_FINGERPRINT : self::CREDENTIALS_PEM_FINGERPRINT;
         } elseif(isset($this->config['pfx_filename']) && isset($this->config['pfx_passphrase'])) {
-            $this->config['pkey'] = 3;
+            $this->config['pkey'] = self::CREDENTIALS_PFX_PASSPHRASE;
         }
     }
 
@@ -291,6 +386,7 @@ class Client implements SecurePaymentGatewayInterface
         if (!array_key_exists('client', $this->config) || empty($this->config['client'])) {
             throw new Exception\ResultCodeException('You must provide a valid client name', ResultCode::ARGUMENT_ERROR);
         }
+        $this->logger->info('Using client ', array('client' => $this->config['client']));
         return $this->config['client'];
     }
 
@@ -307,7 +403,13 @@ class Client implements SecurePaymentGatewayInterface
     {
         $options = array();
         if ($http_method === 'POST') {
+//            if (is_array($message)) {
+//                $message['Client'] = $this->_getClientName();
+//            } else {
+////                $message->client = $this->_getClientName();
+//            }
             $signedRequest = new SignedRequest($message);
+            $signedRequest->setClient($this->_getClientName());
             $cert = $this->getCert();
             $signedRequest->sign($cert);
             $options = [
@@ -317,12 +419,14 @@ class Client implements SecurePaymentGatewayInterface
                 'json' => $signedRequest->toArray(),
             ];
         }
+        $this->logger->debug('Sending Request', [$http_method, $path, $options]);
         try {
             $res = $this->http_client->request($http_method, $path, $options);
         } catch (\Exception $exc) {
             throw new Exception\HttpClientException($exc->getMessage(), $exc->getCode(), $exc);
         }
         $body = (string) $res->getBody();
+        $this->logger->debug('Response body', [$body]);
         $response_obj = json_decode($body, true);
 
         $certificateStore = Registry::contains('CertificateProvider')
@@ -356,21 +460,21 @@ class Client implements SecurePaymentGatewayInterface
     private function getCert()
     {
         switch ($this->config['pkey']) {
-            case 1:
+            case self::CREDENTIALS_FINGERPRINT:
                 if (!file_exists($this->config['pem_filename']) || !is_readable($this->config['pem_filename'])) {
                     throw new Exception\ConfigurationException(sprintf('Error de configuración. No es posible acceder al archivo pem \'%s\'.', $this->config['pem_filename']));
                 }
                 $pkey = file_get_contents($this->config['pem_filename']);
                 $cert = new Certificate\Certificate(null, $pkey, $this->config['privkey_fingerprint']);
                 break;
-            case 2:
+            case self::CREDENTIALS_PEM_FINGERPRINT:
                 if (!Registry::contains('CertificateProvider')) {
                     throw new Exception\ConfigurationException('No se ha registrado la clase \'CertificateProvider\'.');
                 } 
                 $certificateStore = Registry::get('CertificateProvider');
                 $cert = $certificateStore->getByFingerprint($this->config['privkey_fingerprint']);
                 break;
-            case 3:
+            case self::CREDENTIALS_PFX_PASSPHRASE:
                 if (!file_exists($this->config['pfx_filename']) || !is_readable($this->config['pfx_filename'])) {
                     throw new Exception\ConfigurationException(sprintf('Error de configuración. No es posible acceder al archivo pfx \'%s\'.', $this->config['pfx_filename']));
                 }
