@@ -2,6 +2,7 @@
   "name": "plexouy/plexo-sdk",
   "type": "library",
   "license": "AGPL-3.0-only",
+  "description": "Plexo SDK para PHP",
   "autoload": {
     "psr-4": {
       "Plexo\\Sdk\\": "src"

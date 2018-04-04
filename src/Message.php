@@ -20,7 +20,7 @@ abstract class Message implements MessageInterface
         $scheme = call_user_func(array(get_called_class(), 'getValidationMetadata'));
         $errors = [];
         foreach ($scheme as $key => $val) {
-            if ($val['required'] && empty($this->data[$key])) {
+            if ($val['required'] && is_null($this->data[$key])) {
                 array_push($errors, new Exception\InvalidArgumentException(sprintf('%s cannot be empty', $key)));
             } elseif (!is_null($this->data[$key]) && !call_user_func('is_' . $val['type'], $this->data[$key])) {
                 array_push($errors, new Exception\InvalidArgumentException(sprintf('%s must be of type %s', $key, $val['type'])));
