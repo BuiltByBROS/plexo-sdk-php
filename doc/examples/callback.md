@@ -30,14 +30,16 @@ $message = $signedRequest->getMessage();
 
 try {
     $signedRequest->validate();
-    $signedResponse = new Sdk\SignedResponse([
+    $signedResponse = new Sdk\ClientSignedResponse([
         'Client' => $message['Client'],
         'ResultCode' => 0,
     ]);
 } catch (Sdk\PlexoException $exc) {
-    $signedResponse = new Sdk\SignedResponse($exc);
+    $signedResponse = new Sdk\ClientSignedResponse($exc);
+    $signedResponse->setClient($message['Client']);
 } catch (\Exception $exc) {
-    $signedResponse = new Sdk\SignedResponse(new Sdk\Exception\PlexoException('Error interno.', Sdk\ResultCode::SYSTEM_ERROR));
+    $signedResponse = new Sdk\ClientSignedResponse(new Sdk\Exception\PlexoException('Error interno.', Sdk\ResultCode::SYSTEM_ERROR));
+    $signedResponse->setClient($message['Client']);
 }
 
 $certificateProvider = MyCertStore();

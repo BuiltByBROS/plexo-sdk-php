@@ -61,7 +61,7 @@ class SignedMessage
         $arr = [
             'Object' => [
                 'Fingerprint' => strtoupper($this->fingerprint),
-                'UTCUnixTimeExpiration' => $this->utcUnixTimeExpiration,//(time() + 600),
+                'UTCUnixTimeExpiration' => $this->utcUnixTimeExpiration,
             ],
             'Signature' => $this->signature,
         ];
@@ -103,6 +103,12 @@ class SignedMessage
         return $json;
     }
 
+    /**
+     *
+     * @param Certificate\Certificate $cert
+     * @param int $expirationTime
+     * @throws Exception\PlexoException
+     */
     public function sign($cert, $expirationTime = null)
     {
         $this->fingerprint = $cert->fingerprint;
