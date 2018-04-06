@@ -20,10 +20,6 @@ class ClientSignedResponse extends SignedMessage
                 ];
             } else {
                 $object = is_array($this->object) ? $this->object : $this->object->toArray($canonize);
-//                $object = [
-//                    'Client' => $this->client,
-//                    'Request' => is_array($this->object) ? $this->object : $this->object->toArray($canonize),
-//                ];
                 $arr['Object']['Object'] = Utilities\functions\array_filter_recursive($object, $canonize);
             }
         }
