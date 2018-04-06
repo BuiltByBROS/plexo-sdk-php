@@ -34,7 +34,7 @@ echo $signedResponse;
 <?php
 
 $exc = new Sdk\Exception\ResultCodeException('Missing Fields.', Sdk\ResultCode::MISSING_FIELDS);
-$signedResponse = new Sdk\ClientSignedResponse($ex);
+$signedResponse = new Sdk\ClientSignedResponse($exc);
 $signedResponse->setClient('Nombre-Cliente');
 $signedResponse->sign($priv);
 echo $signedResponse;
