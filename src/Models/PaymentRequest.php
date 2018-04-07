@@ -1,6 +1,8 @@
 <?php
 namespace Plexo\Sdk\Models;
 
+use Plexo\Sdk\Type;
+
 class PaymentRequest extends ModelsBase
 {
     /**
@@ -17,9 +19,9 @@ class PaymentRequest extends ModelsBase
     
     protected $data = [
         'ClientReferenceId' => null,
-        'CurrencyId' => null,
+        'CurrencyId' => Type\CurrencyType::UYU,
         'FinancialInclusion' => null,
-        'Installments' => null,
+        'Installments' => 0,
         'Items' => null,
         'OptionalCommerceId' => null,
         'OptionalMetadata' => null,
@@ -37,14 +39,15 @@ class PaymentRequest extends ModelsBase
         return [
             'ClientReferenceId' => [
                 'type' => 'string',
-                'required' => true,
+                'required' => false,
             ],
             'PaymentInstrumentInput' => [
-                'type' => 'PaymentInstrumentInput',
-                'required' => true,
+                'type' => 'class',
+                'class' => 'PaymentInstrumentInput',
+                'required' => false,
             ],
             'Items' => [
-                'type' => 'List<Item>',
+                'type' => 'array',
                 'required' => true,
             ],
             'CurrencyId' => [
@@ -56,12 +59,13 @@ class PaymentRequest extends ModelsBase
                 'required' => true,
             ],
             'FinancialInclusion' => [
-                'type' => 'FinancialInclusion',
-                'required' => true,
+                'type' => 'class',
+                'class' => 'FinancialInclusion',
+                'required' => false,
             ],
             'TipAmount' => [
                 'type' => 'float',
-                'required' => true,
+                'required' => false,
             ],
             'OptionalCommerceId' => [
                 'type' => 'int',
@@ -69,7 +73,7 @@ class PaymentRequest extends ModelsBase
             ],
             'OptionalMetadata' => [
                 'type' => 'string',
-                'required' => true,
+                'required' => false,
             ],
         ];
     }
@@ -86,6 +90,24 @@ class PaymentRequest extends ModelsBase
         foreach ($value as $item) {
             $this->addItem($item);
         }
+        return $this;
+    }
+
+    public function setFinancialInclusion($value)
+    {
+        $this->data['FinancialInclusion'] = FinancialInclusion::fromArray($value);
+        return $this;
+    }
+
+    public function setPaymentInstrumentInput($value)
+    {
+        if (is_array($value)) {
+            $value = PaymentInstrumentInput::fromArray($value);
+        }
+        if (!($value instanceof PaymentInstrumentInput)) {
+            throw new \Plexo\Sdk\Exception\InvalidArgumentException('PaymentInstrumentInput debe ser del tipo \\Plexo\\Sdk\\Models\\PaymentInstrumentInput o un array compatible.');
+        }
+        $this->data['PaymentInstrumentInput'] = $value;
         return $this;
     }
 
@@ -107,10 +129,20 @@ class PaymentRequest extends ModelsBase
     public function toArray($canonize = false)
     {
 //        $scheme = self::getValidationMetadata();
+        $errors = $this->validate();
+        if ($errors) {
+            throw current($errors);
+        }
         $arr = $this->data;
+        if (!is_null($arr['FinancialInclusion'])) {
+            $arr['FinancialInclusion'] = $arr['FinancialInclusion']->toArray($canonize);
+        }
+        if (!is_null($arr['PaymentInstrumentInput'])) {
+            $arr['PaymentInstrumentInput'] = $arr['PaymentInstrumentInput']->toArray($canonize);
+        }
         if ($canonize) {
             if (!is_null($arr['TipAmount'])) {
-                $arr['TipAmount'] = sprintf('float(%.1f)', $arr['TipAmount']);
+                $arr['TipAmount'] = sprintf('float(%s)', $arr['TipAmount']);
             }
         }
         if ($this->data['Items']) {

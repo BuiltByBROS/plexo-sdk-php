@@ -14,7 +14,7 @@ class PaymentInstrumentInput implements PlexoModelInterface
     public $NonStorableItems;
 
     /**
-     * @var bool
+     * @var bool (required)
      */
     public $UseExtendedClientCreditIfAvailable = false;
 
@@ -25,6 +25,14 @@ class PaymentInstrumentInput implements PlexoModelInterface
         foreach ($params as $k => $v) {
             $this->{$k} = $v;
         }
+    }
+
+    public static function fromArray(array $params) {
+        $inst = new self();
+        foreach ($params as $k => $v) {
+            $inst->{$k} = $v;
+        }
+        return $inst;
     }
 
     public function toArray()

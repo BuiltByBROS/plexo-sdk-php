@@ -28,7 +28,7 @@ abstract class Message implements MessageInterface
         }
         return count($errors) ? $errors : false;
     }
-    
+
     protected function load($data)
     {
         if (is_null($data)) {

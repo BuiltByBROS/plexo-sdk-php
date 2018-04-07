@@ -6,23 +6,23 @@ class FinancialInclusion extends ModelsBase//implements PlexoModelInterface
     /**
      * @var float
      */
-    public $BilledAmount;
+    public $BilledAmount = 0.0;
 
     /**
      *
      * @var int 
      */
+    public $InvoiceNumber = 0;
 
-    public $InvoiceNumber;
     /**
      * @var float
      */
-    public $TaxedAmount;
+    public $TaxedAmount = 0.0;
 
     /**
      * @var int One of \Plexo\Sdk\Type\InclusionType
      */
-    public $Type;
+    public $Type = 0;
 
     /**
      * 
@@ -34,14 +34,14 @@ class FinancialInclusion extends ModelsBase//implements PlexoModelInterface
             $this->{$k} = $v;
         }
     }
-    
+
     public function toArray($canonize = false)
     {
         if ($canonize) {
             return [
-                'BilledAmount'  => is_null($this->BilledAmount)  ? null : sprintf('float(%.1f)', $this->BilledAmount),
+                'BilledAmount'  => is_null($this->BilledAmount)  ? null : sprintf('float(%s)', $this->BilledAmount),
                 'InvoiceNumber' => is_null($this->InvoiceNumber) ? null : (int) $this->InvoiceNumber,
-                'TaxedAmount'   => is_null($this->TaxedAmount)   ? null : sprintf('float(%.1f)', $this->TaxedAmount),
+                'TaxedAmount'   => is_null($this->TaxedAmount)   ? null : sprintf('float(%s)', $this->TaxedAmount),
                 'Type'          => is_null($this->Type)          ? null : (int) $this->Type,
             ];
         } else {
