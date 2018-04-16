@@ -142,7 +142,7 @@ class PaymentRequest extends ModelsBase
         }
         if ($canonize) {
             if (!is_null($arr['TipAmount'])) {
-                $arr['TipAmount'] = sprintf('float(%s)', $arr['TipAmount']);
+                $arr['TipAmount'] = sprintf('float(%s)', (float) $arr['TipAmount']);
             }
         }
         if ($this->data['Items']) {
