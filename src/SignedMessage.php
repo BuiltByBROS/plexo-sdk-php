@@ -100,7 +100,7 @@ class SignedMessage
         $json = preg_replace_callback('/\\\\u([0-9a-f]+)/', 'Plexo\Sdk\Utilities\functions\replace_unicode_escape_sequence', $json);
         $json = str_replace('\/', '/', $json);
         $json = preg_replace_callback('/":"float\((\d+)(\.(\d+))?\)"/', function ($matches) {
-            return sprintf('":%d.%d', $matches[1], (array_key_exists(3, $matches) ? $matches[3] : 0));
+            return sprintf('":%d.%s', $matches[1], (array_key_exists(3, $matches) ? $matches[3] : 0));
         }, $json);
         return $json;
     }

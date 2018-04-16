@@ -39,9 +39,9 @@ class FinancialInclusion extends ModelsBase//implements PlexoModelInterface
     {
         if ($canonize) {
             return [
-                'BilledAmount'  => is_null($this->BilledAmount)  ? null : sprintf('float(%s)', $this->BilledAmount),
+                'BilledAmount'  => is_null($this->BilledAmount)  ? null : sprintf('float(%s)', (float) $this->BilledAmount),
                 'InvoiceNumber' => is_null($this->InvoiceNumber) ? null : (int) $this->InvoiceNumber,
-                'TaxedAmount'   => is_null($this->TaxedAmount)   ? null : sprintf('float(%s)', $this->TaxedAmount),
+                'TaxedAmount'   => is_null($this->TaxedAmount)   ? null : sprintf('float(%s)', (float) $this->TaxedAmount),
                 'Type'          => is_null($this->Type)          ? null : (int) $this->Type,
             ];
         } else {
