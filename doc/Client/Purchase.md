@@ -39,7 +39,7 @@ try {
     $response = $client->Purchase([
         'ClientReferenceId' => '72352',
         'CurrencyId' => Type\CurrencyType::UYU,
-        'FinancialInclusion' => new Sdk\Models\FinancialInclusion([
+        'FinancialInclusion' => [
             'Type' => Type\InclusionType::NONE,
             'BilledAmount' => 100,
             'InvoiceNumber' => 10019,
@@ -47,14 +47,19 @@ try {
         ]),
         'Installments' => 3,
         'Items' => [
-            new Sdk\Models\Item([
+            [
                 'Amount' => 100.0,
                 'ClientItemReferenceId' => '12345',
-            ])
+            ],
         ],
-        'PaymentInstrumentInput' => new Sdk\Models\PaymentInstrumentInput([
-            'InstrumentToken' => 'd3052dd3810044d9a4091bd5281157b2'
-        ]),
+        'PaymentInstrumentInput' => [
+            'InstrumentToken' => 'd3052dd3810044d9a4091bd5281157b2',
+            'NonStorableItems' => [
+                'Name' => 'Nombre',
+                Type\FieldType::EMAIL => 'mail@example.net',
+                new Type\FieldType(Type\FieldType::FIRST_NAME, 'Pepe'),
+            ],
+        ],
     ]);
 } catch (Sdk\Exception\PlexoException $exc) {
     printf("[%s] (%d) %s\n", get_class($exc), $exc->getCode(), $exc->getMessage());

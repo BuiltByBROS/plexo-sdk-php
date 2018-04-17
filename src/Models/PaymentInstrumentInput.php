@@ -1,7 +1,9 @@
 <?php
 namespace Plexo\Sdk\Models;
 
-class PaymentInstrumentInput implements PlexoModelInterface
+use Plexo\Sdk\Type;
+
+class PaymentInstrumentInput extends ModelsBase
 {
     /**
      * @var string 
@@ -18,6 +20,12 @@ class PaymentInstrumentInput implements PlexoModelInterface
      */
     public $UseExtendedClientCreditIfAvailable = false;
 
+    protected $data = [
+        'InstrumentToken' => null,
+        'NonStorableItems' => [],
+        'UseExtendedClientCreditIfAvailable' => false,
+    ];
+
     /**
      * @param array $params
      */
@@ -27,20 +35,37 @@ class PaymentInstrumentInput implements PlexoModelInterface
         }
     }
 
-    public static function fromArray(array $params) {
-        $inst = new self();
-        foreach ($params as $k => $v) {
-            $inst->{$k} = $v;
+    public function addNonStorableItems($value, $k = null)
+    {
+        array_push($this->data['NonStorableItems'], ($value instanceof Type\FieldType ? $value : new Type\FieldType($k, $value)));
+        return $this;
+    }
+
+    public function setNonStorableItems(array $value)
+    {
+        $this->data['NonStorableItems'] = [];
+        foreach ($value as $k => $item) {
+            $this->addNonStorableItems($item, $k);
         }
-        return $inst;
+        return $this;
+    }
+
+    public function nonStorableItemsToArray()
+    {
+        $hash = [];
+        foreach ($this->data['NonStorableItems'] as $item) {
+            $hash[$item->getParamName()] = $item->getValue();
+        }
+        ksort($hash);
+        return $hash;
     }
 
     public function toArray()
     {
         return [
-            'InstrumentToken'                    => $this->InstrumentToken,
-            'NonStorableItems'                   => $this->NonStorableItems,
-            'UseExtendedClientCreditIfAvailable' => $this->UseExtendedClientCreditIfAvailable,
+            'InstrumentToken' => $this->data['InstrumentToken'],
+            'NonStorableItems' => $this->nonStorableItemsToArray(),
+            'UseExtendedClientCreditIfAvailable' => $this->data['UseExtendedClientCreditIfAvailable'],
         ];
     }
 }
