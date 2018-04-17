@@ -49,7 +49,7 @@ class FieldType {
     const IDENTIFICATION_TYPE_PASSPORT = '1';
     const IDENTIFICATION_TYPE_OTHER    = '3';
     const IDENTIFICATION_TYPE_RUT      = '4';
-    
+
     private static $keys = [
         0x101 => 'Expiration',
         'Name',
@@ -88,21 +88,49 @@ class FieldType {
 
     public function __construct($param, $value)
     {
-        $this->param = $param;
+        $this->param = is_string($param) ? self::nameToKey($param) : $param;
         $this->value = $value;
     }
 
+    /**
+     * 
+     * @return int
+     */
     public function getParam()
     {
         return $this->param;
     }
 
+    /**
+     * @deprecated since version 0.3.4
+     * @return string
+     * @throws \Plexo\Sdk\Exception\InvalidArgumentException
+     */
     public function getParamKey()
     {
         if (!array_key_exists($this->param, self::$keys)) {
             throw new \Plexo\Sdk\Exception\InvalidArgumentException();
         }
         return self::$keys[$this->param];
+    }
+
+    /**
+     * 
+     * @return string
+     * @throws \Plexo\Sdk\Exception\InvalidArgumentException
+     */
+    public function getParamName()
+    {
+        if (!array_key_exists($this->param, self::$keys)) {
+            var_dump($this->param);
+            throw new \Plexo\Sdk\Exception\InvalidArgumentException();
+        }
+        return self::$keys[$this->param];
+    }
+
+    public static function nameToKey($param)
+    {
+        return array_search($param, self::$keys);
     }
 
     public function getValue()
