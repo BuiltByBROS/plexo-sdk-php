@@ -11,7 +11,7 @@ class PaymentInstrumentInput extends ModelsBase
     public $InstrumentToken;
     
     /**
-     * @var Dictionary<FieldType,string>
+     * @var Dictionary<FieldType,string> Optional
      */
     public $NonStorableItems;
 
@@ -52,6 +52,9 @@ class PaymentInstrumentInput extends ModelsBase
 
     public function nonStorableItemsToArray()
     {
+        if (count($this->data['NonStorableItems']) === 0) {
+            return null;
+        }
         $hash = [];
         foreach ($this->data['NonStorableItems'] as $item) {
             $hash[$item->getParamName()] = $item->getValue();
@@ -63,9 +66,9 @@ class PaymentInstrumentInput extends ModelsBase
     public function toArray()
     {
         return [
-            'InstrumentToken' => $this->data['InstrumentToken'],
+            'InstrumentToken' => $this->InstrumentToken,//$this->data['InstrumentToken'],
             'NonStorableItems' => $this->nonStorableItemsToArray(),
-            'UseExtendedClientCreditIfAvailable' => $this->data['UseExtendedClientCreditIfAvailable'],
+            'UseExtendedClientCreditIfAvailable' => $this->UseExtendedClientCreditIfAvailable,//$this->data['UseExtendedClientCreditIfAvailable'],
         ];
     }
 }

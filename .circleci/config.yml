@@ -1,0 +1,10 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/php:latest
+    steps:
+      - checkout
+      - run: composer install -n --prefer-dist
+      - run: ./vendor/bin/phpunit --bootstrap vendor/autoload.php tests
+
