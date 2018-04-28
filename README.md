@@ -1,5 +1,7 @@
 # Plexo SDK para PHP - Versión 0.3.0
 
+[![CircleCI](https://circleci.com/gh/bng5/plexo-sdk-php/tree/master.svg?style=svg)](https://circleci.com/gh/bng5/plexo-sdk-php/tree/master)
+
 **Plexo** es un repositorio de medios de pago. Su objetivo es facilitar la utilización de estos instrumentos permitiendo desacoplar toda
 complejidad asociada a la integración con los medios de pago.
 
