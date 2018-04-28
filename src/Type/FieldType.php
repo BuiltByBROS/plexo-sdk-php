@@ -122,7 +122,6 @@ class FieldType {
     public function getParamName()
     {
         if (!array_key_exists($this->param, self::$keys)) {
-            var_dump($this->param);
             throw new \Plexo\Sdk\Exception\InvalidArgumentException();
         }
         return self::$keys[$this->param];
