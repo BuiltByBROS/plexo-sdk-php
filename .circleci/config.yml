@@ -1,10 +1,19 @@
 version: 2
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test-5.6
+      - test-7.0
 jobs:
-  build:
+  test-5.6: &test-template
     docker:
-      - image: circleci/php:latest
+      - image: circleci/php:5.6
     steps:
       - checkout
-      - run: composer install -n --prefer-dist
+      - run: composer install -n
       - run: ./vendor/bin/phpunit --bootstrap vendor/autoload.php tests
-
+  test-7.0:
+    <<: *test-template
+    docker:
+      - image: circleci/php:7.0
