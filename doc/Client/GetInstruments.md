@@ -24,6 +24,7 @@ $client = new Sdk\Client();
 try {
     $response = $client->GetInstruments([
         'Type' => Type\AuthorizationType::ANONYMOUS,
+        'Metadata' => 'metadata info',
     ]);
 } catch (Exception $exc) {
     printf("[%s] (%s) %s\n", get_class($exc), $exc->getCode(), $exc->getMessage());
