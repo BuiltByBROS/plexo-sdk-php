@@ -8,17 +8,17 @@ class PaymentInstrumentInput extends ModelsBase
     /**
      * @var string 
      */
-    public $InstrumentToken;
+    // public $InstrumentToken;
     
     /**
      * @var Dictionary<FieldType,string> Optional
      */
-    public $NonStorableItems;
+    // public $NonStorableItems;
 
     /**
      * @var bool (required)
      */
-    public $UseExtendedClientCreditIfAvailable = false;
+    // public $UseExtendedClientCreditIfAvailable = false;
 
     protected $data = [
         'InstrumentToken' => null,
@@ -33,6 +33,24 @@ class PaymentInstrumentInput extends ModelsBase
         foreach ($params as $k => $v) {
             $this->{$k} = $v;
         }
+    }
+
+    public static function getValidationMetadata()
+    {
+        return [
+            'InstrumentToken' => [
+                'type' => 'string',
+                'required' => true,
+            ],
+            'NonStorableItems' => [
+                'type' => 'array',
+                'required' => false,
+            ],
+            'UseExtendedClientCreditIfAvailable' => [
+                'type' => 'bool',
+                'required' => true,
+            ],
+        ];
     }
 
     public function addNonStorableItems($value, $k = null)
@@ -63,12 +81,12 @@ class PaymentInstrumentInput extends ModelsBase
         return $hash;
     }
 
-    public function toArray()
+    public function toArray($canonize = false)
     {
         return [
-            'InstrumentToken' => $this->InstrumentToken,//$this->data['InstrumentToken'],
+            'InstrumentToken' => $this->data['InstrumentToken'],
             'NonStorableItems' => $this->nonStorableItemsToArray(),
-            'UseExtendedClientCreditIfAvailable' => $this->UseExtendedClientCreditIfAvailable,//$this->data['UseExtendedClientCreditIfAvailable'],
+            'UseExtendedClientCreditIfAvailable' => $this->data['UseExtendedClientCreditIfAvailable'],
         ];
     }
 }

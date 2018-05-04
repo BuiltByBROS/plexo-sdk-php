@@ -252,7 +252,7 @@ class Client implements SecurePaymentGatewayInterface
     public function AddIssuerCommerce($commerce)
     {
         if (is_array($commerce)) {
-            $commerce = new Message\IssuerData($commerce);
+            $commerce = Models\IssuerData::fromArray($commerce);
         }
         return new Models\IssuerData($this->_exec('POST', 'Commerce/Issuer/Add', $commerce));
     }

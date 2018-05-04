@@ -44,7 +44,7 @@ class PaymentRequest extends ModelsBase
             'PaymentInstrumentInput' => [
                 'type' => 'class',
                 'class' => 'PaymentInstrumentInput',
-                'required' => false,
+                'required' => true,
             ],
             'Items' => [
                 'type' => 'array',
@@ -120,7 +120,8 @@ class PaymentRequest extends ModelsBase
             if (method_exists($inst, $setter)) {
                 call_user_func([$inst, $setter], $v);
             } else {
-                $inst->data[$k] = $v;
+                $inst->__set($k, $v);
+//                $inst->data[$k] = $v;
             }
         }
         return $inst;
@@ -129,10 +130,7 @@ class PaymentRequest extends ModelsBase
     public function toArray($canonize = false)
     {
 //        $scheme = self::getValidationMetadata();
-        $errors = $this->validate();
-        if ($errors) {
-            throw current($errors);
-        }
+        parent::validate();
         $arr = $this->data;
         if (!is_null($arr['FinancialInclusion'])) {
             $arr['FinancialInclusion'] = $arr['FinancialInclusion']->toArray($canonize);

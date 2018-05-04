@@ -7,7 +7,7 @@ use Plexo\Sdk\Type;
 
 final class PaymentRequestTest extends TestCase
 {
-    public function testCanBeCreatedFromValidArray()
+    public function setUp()
     {
         $paymentRequestData = [
             'ClientReferenceId' => '12345',
@@ -44,11 +44,30 @@ final class PaymentRequestTest extends TestCase
                 ],
             ],
         ];
+    }
+
+    public function testCanBeCreatedFromArray()
+    {
         $paymentRequest = Models\PaymentRequest::fromArray($paymentRequestData);
         $this->assertInstanceOf(
             Models\PaymentRequest::class,
             $paymentRequest
         );
+var_dump($paymentRequest);
+//var_dump($paymentRequest->validate());
+        return $paymentRequest;
+    }
+
+    public function testValues($paymentRequest)
+    {
+        $this->assertSame($expected, $actual)
+    }
+
+    /**
+     * @depends testCanBeCreatedFromValidArray
+     */
+    public function _testSignatureBaseString($paymentRequest)
+    {
         $signedRequest = new SignedRequest($paymentRequest);
         $signedRequest->setClient('Prueba');
         $this->assertSame(
@@ -82,5 +101,81 @@ final class PaymentRequestTest extends TestCase
             '}',
             $signedRequest->getSignatureBaseString()
         );
+    }
+
+    public function testImplementsArrayAccess()
+    {
+        $paymentRequest = new Models\PaymentRequest();
+        $paymentRequest['CurrencyId'] = Type\CurrencyType::USD;
+        $this->assertSame(Type\CurrencyType::USD, $paymentRequest['CurrencyId']);
+    }
+
+    public function testSetters()
+    {
+        $paymentRequest = new Models\PaymentRequest();
+        $paymentRequest->CurrencyId = Type\CurrencyType::USD;
+        $this->assertSame(Type\CurrencyType::USD, $paymentRequest['CurrencyId']);
+        $this->assertSame(Type\CurrencyType::USD, $paymentRequest->CurrencyId);
+    }
+
+    public function testHasDefaults()
+    {
+        $paymentRequest = new Models\PaymentRequest();
+        $this->assertSame(0, $paymentRequest['Installments']);
+        $this->assertSame(Type\CurrencyType::UYU, $paymentRequest['CurrencyId']);
+    }
+
+    /**
+     * @var expectedException Plexo\Sdk\Exception\InvalidArgumentException
+     */
+    public function testMustHaveInstallments()
+    {
+        $paymentRequest = Models\PaymentRequest::fromArray([
+            'Installments' => null,
+            'Items' => [
+                [
+                    'Amount' => 100.0,
+                    'ClientItemReferenceId' => '12345',
+                ],
+            ],
+            'PaymentInstrumentInput' => [
+                'InstrumentToken' => '919B3143797E4032BD8134E85B2DE1F5',
+            ],
+        ]);
+        $this->assertArraySubset([[
+            'class' => 'Plexo\Sdk\Models\PaymentRequest',
+            'error' => 'Installments cannot be empty',
+        ]], $paymentRequest->validate());
+    }
+
+    /**
+     * @expectedException Plexo\Sdk\Exception\InvalidArgumentException
+     */
+    public function testMustHaveItems()
+    {
+        $paymentRequest = Models\PaymentRequest::fromArray([
+            'PaymentInstrumentInput' => [
+                'InstrumentToken' => '919B3143797E4032BD8134E85B2DE1F5',
+                'UseExtendedClientCreditIfAvailable' => true,
+                'OptionalCommerceId' => 48,
+            ],
+        ]);
+        $paymentRequest->toArray(true);
+    }
+
+    /**
+     * @expectedException Plexo\Sdk\Exception\InvalidArgumentException
+     */
+    public function testMustHavePaymentInstrumentInput()
+    {
+        $paymentRequest = Models\PaymentRequest::fromArray([
+            'Items' => [
+                [
+                    'Amount' => 100.0,
+                    'ClientItemReferenceId' => '12345',
+                ],
+            ],
+        ]);
+        $paymentRequest->toArray(true);
     }
 }

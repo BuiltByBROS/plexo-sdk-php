@@ -1,34 +1,38 @@
 <?php
 namespace Plexo\Sdk\Models;
 
-class IssuerData
+class IssuerData extends ModelsBase
 {
     /**
      *
      * @var int 
      */
-    public $IssuerId;
+//    public $IssuerId;
     
     /**
      *
      * @var int 
      */
-    public $CommerceId;
+//    public $CommerceId;
     
 //    Dictionary<FieldType,string> 
     /**
      *
      * @var array 
      */
-    public $Metadata;
+//    public $Metadata;
 
-    /**
-     * 
-     * @param array $params
-     */
-    public function __construct(array $params = []) {
-        foreach ($params as $k => $v) {
-            $this->{$k} = $v;
+    protected $data = [
+        'IssuerId' => null,
+        'CommerceId' => null,
+        'Metadata' => null,
+    ];
+
+    public function setIssuerId($value)
+    {
+        if (is_scalar($value) && is_numeric($value)) {
+            $this->data['IssuerId'] = (int) $value;
         }
+        return $this;
     }
 }

@@ -7,31 +7,39 @@ class Item extends ModelsBase// implements PlexoModelInterface
      *
      * @var float
      */
-    public $Amount;
+    // public $Amount;
     
     /**
      *
      * @var string
      */
-    public $ClientItemReferenceId;
+    // public $ClientItemReferenceId;
 
     /**
      *
      * @var array List<InfoLine> 
      */
-    public $InfoLines;
+    // public $InfoLines;
 
     /**
      *
      * @var string 
      */
-    public $MetaData;
+    // public $MetaData;
 
     /**
      *
      * @var array List<string> 
      */
-    public $Tags;
+    // public $Tags;
+
+    protected $data = [
+        'Amount' => null,
+        'ClientItemReferenceId' => null,
+        'InfoLines' => null,
+        'MetaData' => null,
+        'Tags' => null,
+    ];
 
     /**
      * 
@@ -39,8 +47,34 @@ class Item extends ModelsBase// implements PlexoModelInterface
      */
     public function __construct(array $params = []) {
         foreach ($params as $k => $v) {
-            $this->{$k} = $v;
+            $this->data[$k] = $v;
         }
+    }
+
+    public static function getValidationMetadata()
+    {
+        return [
+            'Amount' => [
+                'type' => 'float',
+                'required' => true,
+            ],
+            'ClientItemReferenceId' => [
+                'type' => 'string',
+                'required' => false,
+            ],
+            'InfoLines' => [
+                'type' => 'array',
+                'required' => false,
+            ],
+            'MetaData' => [
+                'type' => 'string',
+                'required' => false,
+            ],
+            'Tags' => [
+                'type' => 'array',
+                'required' => false,
+            ],
+        ];
     }
 
     public function toArray($canonize = false)

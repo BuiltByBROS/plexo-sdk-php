@@ -6,23 +6,30 @@ class FinancialInclusion extends ModelsBase//implements PlexoModelInterface
     /**
      * @var float
      */
-    public $BilledAmount = 0.0;
+    // public $BilledAmount = 0.0;
 
     /**
      *
      * @var int 
      */
-    public $InvoiceNumber = 0;
+    // public $InvoiceNumber = 0;
 
     /**
      * @var float
      */
-    public $TaxedAmount = 0.0;
+    // public $TaxedAmount = 0.0;
 
     /**
      * @var int One of \Plexo\Sdk\Type\InclusionType
      */
-    public $Type = 0;
+    // public $Type = 0;
+
+    protected $data = [
+        'BilledAmount' => 0.0,
+        'InvoiceNumber' => 0,
+        'TaxedAmount' => 0.0,
+        'Type' => 0,
+    ];
 
     /**
      * 
@@ -33,6 +40,28 @@ class FinancialInclusion extends ModelsBase//implements PlexoModelInterface
         foreach ($params as $k => $v) {
             $this->{$k} = $v;
         }
+    }
+
+    public static function getValidationMetadata()
+    {
+        return [
+            'BilledAmount' => [
+                'type' => 'float',
+                'required' => false,
+            ],
+            'InvoiceNumber' => [
+                'type' => 'int',
+                'required' => false,
+            ],
+            'TaxedAmount' => [
+                'type' => 'float',
+                'required' => false,
+            ],
+            'Type' => [
+                'type' => 'int',
+                'required' => false,
+            ],
+        ];
     }
 
     public function toArray($canonize = false)
