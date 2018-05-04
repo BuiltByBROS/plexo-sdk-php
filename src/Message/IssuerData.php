@@ -33,7 +33,7 @@ class IssuerData extends Sdk\Message
         }
         $this->data['CommerceId'] = (int) $data['CommerceId'];
         $this->data['IssuerId'] = (int) $data['IssuerId'];
-        if (!array_key_exists('Metadata', $data) || !is_array($data['Metadata'])) {
+        if (array_key_exists('Metadata', $data) && is_array($data['Metadata'])) {
             $this->data['Metadata'] = $data['Metadata'];
         }
     }
