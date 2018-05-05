@@ -4,29 +4,33 @@ namespace Plexo\Sdk\Models;
 class IssuerData extends ModelsBase
 {
     /**
-     *
-     * @var int 
+     * @var int $IssuerId
+     * @var int $CommerceId
+     * @var array $Metadata Dictionary<FieldType,string> 
      */
-//    public $IssuerId;
-    
-    /**
-     *
-     * @var int 
-     */
-//    public $CommerceId;
-    
-//    Dictionary<FieldType,string> 
-    /**
-     *
-     * @var array 
-     */
-//    public $Metadata;
-
     protected $data = [
         'IssuerId' => null,
         'CommerceId' => null,
         'Metadata' => null,
     ];
+
+    public static function getValidationMetadata()
+    {
+        return [
+            'IssuerId' => [
+                'type' => 'int',
+                'required' => true,
+            ],
+            'CommerceId' => [
+                'type' => 'int',
+                'required' => true,
+            ],
+            'Metadata' => [
+                'type' => 'array',
+                'required' => false,
+            ],
+        ];
+    }
 
     public function setIssuerId($value)
     {

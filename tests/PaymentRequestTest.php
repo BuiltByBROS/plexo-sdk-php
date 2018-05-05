@@ -9,7 +9,7 @@ final class PaymentRequestTest extends TestCase
 {
     public function setUp()
     {
-        $paymentRequestData = [
+        $this->paymentRequestData = [
             'ClientReferenceId' => '12345',
             'CurrencyId' => Type\CurrencyType::UYU,
             'FinancialInclusion' => [
@@ -23,6 +23,19 @@ final class PaymentRequestTest extends TestCase
                 [
                     'Amount' => 321.123,
                     'ClientItemReferenceId' => '12345',
+                    'InfoLines' => [
+                        [
+                            'Text' => 'Abc',
+                            'Amount' => 123,
+                        ],
+                        new Models\InfoLine('Xyz', 321),
+                        Models\InfoLine::fromArray([
+                            'Text' => 'Qwerty',
+                            'Amount' => '987',
+                        ]),
+                    ],
+                    'Tags' => ['a', 'b', 'c'],
+                    'MetaData' => 'Metadata info',
                 ],
                 [
                     'Amount' => 321.012,
@@ -46,27 +59,21 @@ final class PaymentRequestTest extends TestCase
         ];
     }
 
-    public function testCanBeCreatedFromArray()
+    public function testCanBeCreatedFromValidArray()
     {
-        $paymentRequest = Models\PaymentRequest::fromArray($paymentRequestData);
+        $paymentRequest = Models\PaymentRequest::fromArray($this->paymentRequestData);
         $this->assertInstanceOf(
             Models\PaymentRequest::class,
             $paymentRequest
         );
-var_dump($paymentRequest);
-//var_dump($paymentRequest->validate());
+        $this->assertEmpty($paymentRequest->validate());
         return $paymentRequest;
-    }
-
-    public function testValues($paymentRequest)
-    {
-        $this->assertSame($expected, $actual)
     }
 
     /**
      * @depends testCanBeCreatedFromValidArray
      */
-    public function _testSignatureBaseString($paymentRequest)
+    public function testSignatureBaseString($paymentRequest)
     {
         $signedRequest = new SignedRequest($paymentRequest);
         $signedRequest->setClient('Prueba');
@@ -86,7 +93,7 @@ var_dump($paymentRequest);
                   '},'.
                   '"Installments":3,'.
                   '"Items":['.
-                    '{"Amount":321.123,"ClientItemReferenceId":"12345"},'.
+                    '{"Amount":321.123,"ClientItemReferenceId":"12345","InfoLines":[{"Amount":123.0,"Text":"Abc"},{"Amount":321.0,"Text":"Xyz"},{"Amount":987.0,"Text":"Qwerty"}],"MetaData":"Metadata info","Tags":["a","b","c"]},'.
                     '{"Amount":321.012,"ClientItemReferenceId":"23456"},'.
                     '{"Amount":321.1,"ClientItemReferenceId":"34567"}'.
                   '],'.
@@ -103,6 +110,22 @@ var_dump($paymentRequest);
         );
     }
 
+    public function testEmptyModel()
+    {
+        $this->assertEquals(
+            new Models\PaymentRequest(),
+            Models\PaymentRequest::fromArray([])
+        );
+    }
+
+    public function testDefaults()
+    {
+        $paymentRequest = new Models\PaymentRequest();
+        $this->assertSame(0, $paymentRequest['Installments']);
+        $this->assertSame(Type\CurrencyType::UYU, $paymentRequest['CurrencyId']);
+        return $paymentRequest;
+    }
+
     public function testImplementsArrayAccess()
     {
         $paymentRequest = new Models\PaymentRequest();
@@ -110,7 +133,7 @@ var_dump($paymentRequest);
         $this->assertSame(Type\CurrencyType::USD, $paymentRequest['CurrencyId']);
     }
 
-    public function testSetters()
+    public function testSetGet()
     {
         $paymentRequest = new Models\PaymentRequest();
         $paymentRequest->CurrencyId = Type\CurrencyType::USD;
@@ -118,17 +141,7 @@ var_dump($paymentRequest);
         $this->assertSame(Type\CurrencyType::USD, $paymentRequest->CurrencyId);
     }
 
-    public function testHasDefaults()
-    {
-        $paymentRequest = new Models\PaymentRequest();
-        $this->assertSame(0, $paymentRequest['Installments']);
-        $this->assertSame(Type\CurrencyType::UYU, $paymentRequest['CurrencyId']);
-    }
-
-    /**
-     * @var expectedException Plexo\Sdk\Exception\InvalidArgumentException
-     */
-    public function testMustHaveInstallments()
+    public function testRequireInstallments()
     {
         $paymentRequest = Models\PaymentRequest::fromArray([
             'Installments' => null,
@@ -148,10 +161,7 @@ var_dump($paymentRequest);
         ]], $paymentRequest->validate());
     }
 
-    /**
-     * @expectedException Plexo\Sdk\Exception\InvalidArgumentException
-     */
-    public function testMustHaveItems()
+    public function testRequireItems()
     {
         $paymentRequest = Models\PaymentRequest::fromArray([
             'PaymentInstrumentInput' => [
@@ -160,13 +170,15 @@ var_dump($paymentRequest);
                 'OptionalCommerceId' => 48,
             ],
         ]);
-        $paymentRequest->toArray(true);
+        $this->assertArraySubset([[
+                'class' => 'Plexo\\Sdk\\Models\\PaymentRequest',
+                'error' => 'Items cannot be empty',
+            ]],
+            $paymentRequest->validate()
+        );
     }
 
-    /**
-     * @expectedException Plexo\Sdk\Exception\InvalidArgumentException
-     */
-    public function testMustHavePaymentInstrumentInput()
+    public function testRequirePaymentInstrumentInput()
     {
         $paymentRequest = Models\PaymentRequest::fromArray([
             'Items' => [
@@ -177,5 +189,18 @@ var_dump($paymentRequest);
             ],
         ]);
         $paymentRequest->toArray(true);
+    }
+
+    public function testValidateRecursive()
+    {
+        array_push($this->paymentRequestData['Items'], [
+            'ClientItemReferenceId' => '34567',
+        ]);
+        $paymentRequest = Models\PaymentRequest::fromArray($this->paymentRequestData);
+        $errors = $paymentRequest->validate();
+        $this->assertArraySubset([[
+            'class' => 'Plexo\\Sdk\\Models\\Item',
+            'error' => 'Amount cannot be empty',
+        ]], $errors);
     }
 }

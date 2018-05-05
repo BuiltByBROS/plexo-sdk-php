@@ -1,8 +1,6 @@
 <?php
 namespace Plexo\Sdk\Models;
 
-use Plexo\Sdk\Exception;
-
 abstract class ModelsBase implements \ArrayAccess
 {
 
@@ -43,7 +41,6 @@ abstract class ModelsBase implements \ArrayAccess
     public function __set($key, $value)
     {
         $setter = 'set'.$key;
-var_dump($setter);
         if (method_exists($this, $setter)) {
             call_user_func([$this, $setter], $value);
         }
@@ -52,15 +49,14 @@ var_dump($setter);
         }
     }
 
-    public function __get($offset)
+    public function __get($key)
     {
-        return array_key_exists($offset, $this->data) ? $this->data[$offset] : null;
+        return array_key_exists($key, $this->data) ? $this->data[$key] : null;
     }
 
     public function validate(&$errors = array())
     {
         $scheme = call_user_func(array(get_called_class(), 'getValidationMetadata'));
-//        $errors = [];
         foreach ($scheme as $key => $val) {
             if ($val['required'] && is_null($this->data[$key])) {
                 array_push($errors, [
@@ -91,15 +87,34 @@ var_dump($setter);
                     'class' => get_called_class(),
                     'error' => sprintf('%s must be of type %s, %s given.', $key, $val['type'], gettype($this->data[$key])),
                 ]);
-            }
-            if ($this->data[$key] instanceof self) {
-                $this->data[$key]->validate($errors);
+            } elseif (!is_null($this->data[$key]) && $val['type'] === 'class') {
+                if (array_key_exists('array', $val) && $val['array'] && count($this->data[$key])) {
+                    foreach ($this->data[$key] as $item) {
+                        if (!(is_a($item, 'Plexo\\Sdk\\Models\\'.$val['class']))) {
+                            array_push($errors, [
+                                'class' => get_called_class(),
+                                'error' => sprintf('%s must be of type %s, %s given.', $key, $val['class'], gettype($item)),
+                            ]);
+                        } else {
+                            $item->validate($errors);
+                        }
+                    }
+                } else {
+                    if (!(is_a($this->data[$key], 'Plexo\\Sdk\\Models\\'.$val['class']))) {
+                        array_push($errors, [
+                            'class' => get_called_class(),
+                            'error' => sprintf('%s must be of type %s, %s given.', $key, $val['class'], gettype($this->data[$key])),
+                        ]);
+                    } else {
+                        $this->data[$key]->validate($errors);
+                    }
+                }
             }
         }
         return $errors;
     }
 
-    public static function fromArray($data)
+    public static function fromArray(array $data)
     {
         $inst = new static();
         foreach ($data as $k => $v) {

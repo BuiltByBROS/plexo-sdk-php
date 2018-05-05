@@ -1,4 +1,6 @@
-/vendor/
+/composer.lock
+/vendor
+
 index.php
 index1.php
 /src/PaymentGatewayClient.php
@@ -6,7 +8,6 @@ index1.php
 /src/Certificate/CertificateHelper.php
 /src/Certificate/CertificateHelperFactory.php
 .env
-LICENSE
 mensajes/
 /tests/CertificateTest_.php
 /test/

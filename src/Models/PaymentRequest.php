@@ -47,7 +47,9 @@ class PaymentRequest extends ModelsBase
                 'required' => true,
             ],
             'Items' => [
-                'type' => 'array',
+                'type' => 'class',
+                'class' => 'Item',
+                'array' => true,
                 'required' => true,
             ],
             'CurrencyId' => [
@@ -111,7 +113,7 @@ class PaymentRequest extends ModelsBase
         return $this;
     }
 
-    public static function fromArray($data)
+    public static function fromArray(array $data)
     {
         $inst = new self();
         foreach ($data as $k => $v) {
