@@ -4,39 +4,16 @@ namespace Plexo\Sdk\Models;
 class Item extends ModelsBase// implements PlexoModelInterface
 {
     /**
-     *
-     * @var float
+     * @var float $Amount
+     * @var string $ClientItemReferenceId
+     * @var array List<InfoLine> $InfoLines
+     * @var string $MetaData
+     * @var array List<string> $Tags
      */
-    // public $Amount;
-    
-    /**
-     *
-     * @var string
-     */
-    // public $ClientItemReferenceId;
-
-    /**
-     *
-     * @var array List<InfoLine> 
-     */
-    // public $InfoLines;
-
-    /**
-     *
-     * @var string 
-     */
-    // public $MetaData;
-
-    /**
-     *
-     * @var array List<string> 
-     */
-    // public $Tags;
-
     protected $data = [
         'Amount' => null,
         'ClientItemReferenceId' => null,
-        'InfoLines' => null,
+        'InfoLines' => [],
         'MetaData' => null,
         'Tags' => null,
     ];
@@ -77,12 +54,31 @@ class Item extends ModelsBase// implements PlexoModelInterface
         ];
     }
 
+    public function addInfoLine($infoLine)
+    {
+        array_push($this->data['InfoLines'], ($infoLine instanceof InfoLine ? $infoLine : InfoLine::fromArray($infoLine)));
+        return $this;
+    }
+
+    public function setInfoLines(array $infoLines)
+    {
+        $this->data['InfoLines'] = [];
+        foreach ($infoLines as $infoLine) {
+            $this->addInfoLine($infoLine);
+        }
+        return $this;
+    }
+
     public function toArray($canonize = false)
     {
         return [
             'Amount'                => is_null($this->Amount) ? null : ($canonize ? sprintf('float(%s)', (float) $this->Amount) : (float) $this->Amount),
             'ClientItemReferenceId' => $this->ClientItemReferenceId,
-            'InfoLines'             => $this->InfoLines,
+            'InfoLines'             => count($this->data['InfoLines'])
+                ? array_map(function ($infoLine) use ($canonize) {
+                    return ($infoLine instanceof InfoLine) ? $infoLine->toArray($canonize) : $infoLine;
+                }, $this->data['InfoLines'])
+                : null,
             'MetaData'              => $this->MetaData,
             'Tags'                  => $this->Tags,
         ];
