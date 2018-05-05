@@ -1,20 +1,26 @@
 <?php
 namespace Plexo\Sdk\Models;
 
-class AuthorizationInfo extends ModelsBase
+class DeleteInstrumentRequest extends ModelsBase
 {
     /**
-     * @var int $Type Any of the Plexo\Type\AuthorizationType constants
-     * @var string $MetaReference 
+     * @var string $InstrumentToken
+     * @var string $MetaReference
+     * @var int $Type One of the AuthorizationType constants
      */
     protected $data = [
+        'InstrumentToken' => null,
         'MetaReference' => null,
-        'Type' => 0,
+        'Type' => null,
     ];
 
     public static function getValidationMetadata()
     {
         return [
+            'InstrumentToken' => [
+                'type' => 'string',
+                'required' => false,
+            ],
             'MetaReference' => [
                 'type' => 'string',
                 'required' => false,

@@ -1,17 +1,30 @@
 <?php
 namespace Plexo\Sdk\Models;
 
-class Commerce
+class Commerce extends ModelsBase
 {
     /**
      * @var int $CommerceId
+     * @var string $Name
      */
-    public $CommerceId;
+    protected $data = [
+        'CommerceId' => null,
+        'Name' => null,
+    ];
 
-    /**
-     * @var int $Name
-     */
-    public $Name;
+    public static function getValidationMetadata()
+    {
+        return [
+            'CommerceId' => [
+                'type' => 'int',
+                'required' => false,
+            ],
+            'Name' => [
+                'type' => 'string',
+                'required' => false,
+            ],
+        ];
+    }
 
     /**
      * 

@@ -131,8 +131,6 @@ class PaymentRequest extends ModelsBase
 
     public function toArray($canonize = false)
     {
-//        $scheme = self::getValidationMetadata();
-        parent::validate();
         $arr = $this->data;
         if (!is_null($arr['FinancialInclusion'])) {
             $arr['FinancialInclusion'] = $arr['FinancialInclusion']->toArray($canonize);

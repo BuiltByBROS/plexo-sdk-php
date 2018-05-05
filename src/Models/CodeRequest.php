@@ -10,27 +10,34 @@ class CodeRequest extends ModelsBase
 
     /**
      *
-     * @var string
+     * @var string Code
+     * @var int Action
      */
-    public $Code;
-
-    /**
-     *
-     * @var int
-     */
-    public $Action = self::CODE_ACTION_QUERY;
+    protected $data = [
+        'Code' => null,
+        'Action' => self::CODE_ACTION_QUERY,
+    ];
 
     public function __construct($code = null, $action = 0) {
-        $this->Code = $code;
-        $this->Action = $action;
+        $this->data['Code'] = $code;
+        $this->data['Action'] = $action;
     }
 
-    public function toArray()
+    public static function getValidationMetadata()
     {
-        $data = [
-            'Action' => $this->Action,
-            'Code' => $this->Code,
+        return [
+            'Code' => [
+                'type' => 'string',
+                'required' => false,
+            ],
+            'Action' => [
+                'type' => 'int',
+                'required' => false,
+            ],
         ];
-        return $data;
+    }
+
+    public function toArray($canonize = false) {
+        return $this->data;
     }
 }

@@ -4,34 +4,17 @@ namespace Plexo\Sdk\Models;
 class TransactionQuery extends ModelsBase
 {
     /**
-     *
-     * @var string
+     * @var array List<Query> $Queries
+     * @var array List<TransactionOrder> $Order
+     * @var int $Limit
+     * @var int $Skip
      */
-    public $client;
-
-    /**
-     *
-     * @var array List<Query>
-     */
-    public $Queries = [];
-
-    /**
-     *
-     * @var array List<TransactionOrder>
-     */
-    public $Order = [];
-
-    /**
-     *
-     * @var int 
-     */
-    public $Limit = 20;
-    
-    /**
-     *
-     * @var int 
-     */
-    public $Skip = 0;
+    protected $data = [
+        'Queries' => [],
+        'Order' => [],
+        'Limit' => 20,
+        'Skip' => 0,
+    ];
 
     /**
      * 
@@ -41,35 +24,57 @@ class TransactionQuery extends ModelsBase
     {
         if ($data) {
             if (array_key_exists('Queries', $data)) {
-                $this->Queries = array_map(function ($item) {
+                $this->data['Queries'] = array_map(function ($item) {
                     return Query::fromArray($item);
                 }, $data['Queries']);
             }
             if (array_key_exists('Order', $data)) {
-                $this->Order = array_map(function ($item) {
+                $this->data['Order'] = array_map(function ($item) {
                     return TransactionOrder::fromArray($item);
                 }, $data['Order']);
             }
             if (array_key_exists('Limit', $data)) {
-                $this->Limit = $data['Limit'];
+                $this->data['Limit'] = $data['Limit'];
             }
             if (array_key_exists('Skip', $data)) {
-                $this->Skip = $data['Skip'];
+                $this->data['Skip'] = $data['Skip'];
             }
         }
     }
-    
+
+    public static function getValidationMetadata()
+    {
+        return [
+            'Queries' => [
+                'type' => 'array',
+                'required' => false,
+            ],
+            'Order' => [
+                'type' => 'array',
+                'required' => false,
+            ],
+            'Limit' => [
+                'type' => 'int',
+                'required' => true,
+            ],
+            'Skip' => [
+                'type' => 'int',
+                'required' => true,
+            ],
+        ];
+    }
+
     public function toArray($canonize = false)
     {
         $data = [
-            'Limit'   => $this->Limit,
+            'Limit' => $this->data['Limit'],
             'Order' => array_map(function ($item) {
                 return $item->toArray();
-            }, $this->Order),
+            }, $this->data['Order']),
             'Queries' => array_map(function ($item) {
                 return $item->toArray();
-            }, $this->Queries),
-            'Skip'    => $this->Skip,
+            }, $this->data['Queries']),
+            'Skip' => $this->data['Skip'],
         ];
         return $data;
     }

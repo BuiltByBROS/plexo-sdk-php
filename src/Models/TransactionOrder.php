@@ -49,7 +49,7 @@ class TransactionOrder extends ModelsBase
         $this->Direction = $direction;
     }
 
-    public static function fromArray($array)
+    public static function fromArray(array $array)
     {
         $inst = new self();
         foreach ($array as $k => $v) {
@@ -58,7 +58,7 @@ class TransactionOrder extends ModelsBase
         return $inst;
     }
 
-    public function toArray()
+    public function toArray($canonize = false)
     {
         return [
             'Direction' => $this->Direction,
