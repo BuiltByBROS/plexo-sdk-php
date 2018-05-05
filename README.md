@@ -1,5 +1,6 @@
 # Plexo SDK para PHP - Versión 0.3.0
 
+[![Build Status](https://travis-ci.org/bng5/plexo-sdk-php.svg?branch=master)](https://travis-ci.org/bng5/plexo-sdk-php)
 [![CircleCI](https://circleci.com/gh/BuiltByBROS/plexo-sdk-php.svg?style=svg)](https://circleci.com/gh/BuiltByBROS/plexo-sdk-php)
 [![Dependency Status](https://www.versioneye.com/user/projects/5aeb61330fb24f5450e02d8e/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/5aeb61330fb24f5450e02d8e)
 
