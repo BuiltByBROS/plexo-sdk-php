@@ -13,7 +13,7 @@ class AuthorizationInfo extends ModelsBase
      *
      * @var int Plexo\Type\AuthorizationType::*
      */
-    public $Type;
+    public $Type = 0;
 
     /**
      *
@@ -28,7 +28,7 @@ class AuthorizationInfo extends ModelsBase
 
     protected $data = [
         'MetaReference' => null,
-        'Type' => null,
+        'Type' => 0,
     ];
 
     public function toArray($canonize = false)

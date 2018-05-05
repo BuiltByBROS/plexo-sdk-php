@@ -20,9 +20,10 @@
   * **Items** (List<Item>) Es una lista con los ítems de la compra, que contiene los siguientes campos:
     * Amount : monto del item
     * ClientItemReferenceId : ID del item
-  * **PaymentInstrumentInput** (PaymentInstrumentInput)
   * **OptionalCommerceId** *opcional* (int)
   * **OptionalMetadata** *opcional* (string)
+  * **PaymentInstrumentInput** (PaymentInstrumentInput)
+  * **TipAmount** *opcional* (float)
 
 ## Ejemplo
 
