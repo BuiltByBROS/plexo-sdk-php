@@ -66,9 +66,9 @@ class Client implements SecurePaymentGatewayInterface
     public function Authorize($auth)
     {
         if (is_array($auth)) {
-            $auth = new Message\Authorization($auth);
+            $auth = Models\Authorization::fromArray($auth);
         }
-        if (!($auth instanceof Message\Authorization)) {
+        if (!($auth instanceof Models\Authorization)) {
             throw new Exception\PlexoException('$auth debe ser del tipo array o \Plexo\Sdk\Message\Authorization');// FIXME
         }
         return $this->_exec('POST', 'Auth', $auth);
@@ -116,7 +116,7 @@ class Client implements SecurePaymentGatewayInterface
     public function EndReserve($reserve)
     {
         if (is_array($reserve)) {
-            $reserve = new Message\Reserve($reserve);
+            $reserve = Models\Reserve::fromArray($reserve);
         }
         return $this->_exec('POST', 'Operation/EndReserve', $reserve);
     }
@@ -178,7 +178,7 @@ class Client implements SecurePaymentGatewayInterface
     {
         $commerces = $this->_exec('POST', 'Commerce');
         return array_map(function($item) {
-            return new Models\Commerce($item);
+            return Models\Commerce::fromArray($item);
         }, $commerces);
     }
 
@@ -190,10 +190,10 @@ class Client implements SecurePaymentGatewayInterface
     public function AddCommerce($commerce)
     {
         if (is_array($commerce)) {
-            $commerce = new Message\Commerce($commerce);
+            $commerce = Models\Commerce::fromArray($commerce);
             $commerce->CommerceId = null;
         }
-        return new Models\Commerce($this->_exec('POST', 'Commerce/Add', $commerce));
+        return Models\Commerce::fromArray($this->_exec('POST', 'Commerce/Add', $commerce));
     }
 
     /**
@@ -204,9 +204,9 @@ class Client implements SecurePaymentGatewayInterface
     public function ModifyCommerce($commerce)
     {
         if (is_array($commerce)) {
-            $commerce = new Message\Commerce($commerce);
+            $commerce = Models\Commerce::fromArray($commerce);
         }
-        return new Models\Commerce($this->_exec('POST', 'Commerce/Modify', $commerce));
+        return Models\Commerce::fromArray($this->_exec('POST', 'Commerce/Modify', $commerce));
     }
 
     /**
@@ -217,7 +217,7 @@ class Client implements SecurePaymentGatewayInterface
     public function DeleteCommerce($commerce)
     {
         if (is_array($commerce)) {
-            $commerce = new Message\Commerce($commerce);
+            $commerce = Models\Commerce::fromArray($commerce);
             $commerce->Name = null;
         }
         return $this->_exec('POST', 'Commerce/Delete', $commerce);
@@ -231,7 +231,7 @@ class Client implements SecurePaymentGatewayInterface
     public function SetDefaultCommerce($commerce)
     {
         if (is_array($commerce)) {
-            $commerce = new Message\Commerce($commerce);
+            $commerce = Models\Commerce::fromArray($commerce);
             $commerce->Name = null;
         }
         return $this->_exec('POST', 'Commerce/SetDefault', $commerce);
@@ -240,7 +240,7 @@ class Client implements SecurePaymentGatewayInterface
     public function GetCommerceIssuers($commerce)
     {
         if (is_array($commerce)) {
-            $commerce = new Message\Commerce($commerce);
+            $commerce = Models\Commerce::fromArray($commerce);
             $commerce->Name = null;
         }
         $issuers = $this->_exec('POST', 'Commerce/Issuer', $commerce);
@@ -265,7 +265,7 @@ class Client implements SecurePaymentGatewayInterface
     public function DeleteIssuerCommerce($commerce)
     {
         if (is_array($commerce)) {
-            $commerce = new Message\IssuerData($commerce);
+            $commerce = Models\IssuerData::fromArray($commerce);
             $commerce->Metadata = null;
         }
         return $this->_exec('POST', 'Commerce/Issuer/Delete', $commerce);
@@ -403,11 +403,12 @@ class Client implements SecurePaymentGatewayInterface
     {
         $options = array();
         if ($http_method === 'POST') {
-//            if (is_array($message)) {
-//                $message['Client'] = $this->_getClientName();
-//            } else {
-////                $message->client = $this->_getClientName();
-//            }
+            if (!is_null($message)) {
+                $errors = $message->validate();
+                if (is_array($errors) && count($errors)) {
+                    throw new Exception\InvalidArgumentException($errors[0]['error'] . ' in ' . $errors[0]['class']);
+                } 
+            }
             $signedRequest = new SignedRequest($message);
             $signedRequest->setClient($this->_getClientName());
             $cert = $this->getCert();

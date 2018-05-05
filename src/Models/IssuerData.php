@@ -19,11 +19,11 @@ class IssuerData extends ModelsBase
         return [
             'IssuerId' => [
                 'type' => 'int',
-                'required' => true,
+                'required' => false,
             ],
             'CommerceId' => [
                 'type' => 'int',
-                'required' => true,
+                'required' => false,
             ],
             'Metadata' => [
                 'type' => 'array',
@@ -38,5 +38,19 @@ class IssuerData extends ModelsBase
             $this->data['IssuerId'] = (int) $value;
         }
         return $this;
+    }
+
+    public function toArray($canonize = false) {
+        $arr = [
+            'IssuerId' => $this->data['IssuerId'],
+            'CommerceId' => $this->data['CommerceId'],
+        ];
+        if ($this->data['Metadata'] && is_array($this->data['Metadata'])) {
+            $arr['Metadata'] = [];
+            foreach ($this->data['Metadata'] as $k => $v) {
+                $arr['Metadata'][$k] = (string) $v; 
+            }
+        }
+        return $arr;
     }
 }

@@ -58,7 +58,7 @@ abstract class ModelsBase implements \ArrayAccess
     {
         $scheme = call_user_func(array(get_called_class(), 'getValidationMetadata'));
         foreach ($scheme as $key => $val) {
-            if ($val['required'] && is_null($this->data[$key])) {
+            if ($val['required'] && (is_null($this->data[$key]) || is_array($this->data[$key]) && count($this->data[$key]) === 0)) {
                 array_push($errors, [
                     'class' => get_called_class(),
                     'error' => sprintf('%s cannot be empty', $key)
