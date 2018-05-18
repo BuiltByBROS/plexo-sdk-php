@@ -4,26 +4,40 @@ namespace Plexo\Sdk\Models;
 class TimeLimit extends ModelsBase
 {
     /**
-     *
-     * @var int 
+     * @var int $SecondsLeft
+     * @var \Plexo\Sdk\Type\FieldType $RequirementAfterTimeLimit
      */
-    public $SecondsLeft;
 
-    /**
-     *
-     * @var Plexo\Sdk\Type\FieldType
-     */
-    public $RequirementAfterTimeLimit;
+    protected $data = [
+        'SecondsLeft' => 0,
+        'RequirementAfterTimeLimit' => null,
+    ];
 
-    public function __construct($secondsLeft, $requirementAfterTimeLimit) {
-        $this->SecondsLeft = $secondsLeft;
-        $this->RequirementAfterTimeLimit = $requirementAfterTimeLimit;
+    public function __construct($secondsLeft, $requirementAfterTimeLimit)
+    {
+        $this->data['SecondsLeft'] = $secondsLeft;
+        $this->data['RequirementAfterTimeLimit'] = $requirementAfterTimeLimit;
     }
 
-    public function toArray() {
+    public static function getValidationMetadata()
+    {
         return [
-            'RequirementAfterTimeLimit' => $this->RequirementAfterTimeLimit,
-            'SecondsLeft' => $this->SecondsLeft,
+            'SecondsLeft' => [
+                'type' => 'int',
+                'required' => false,
+            ],
+            'RequirementAfterTimeLimit' => [
+                'type' => 'int',
+                'required' => false,
+            ],
+        ];
+    }
+
+    public function toArray($canonize = false)
+    {
+        return [
+            'RequirementAfterTimeLimit' => $this->data['RequirementAfterTimeLimit'],
+            'SecondsLeft' => $this->data['SecondsLeft'],
         ];
     }
 }

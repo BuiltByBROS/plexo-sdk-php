@@ -3,7 +3,6 @@ namespace Plexo\Sdk\Models;
 
 abstract class ModelsBase implements \ArrayAccess
 {
-
     protected $data = [];
 
     /**
@@ -88,7 +87,7 @@ abstract class ModelsBase implements \ArrayAccess
                     'error' => sprintf('%s must be of type %s, %s given.', $key, $val['type'], gettype($this->data[$key])),
                 ]);
             } elseif (!is_null($this->data[$key]) && $val['type'] === 'class') {
-                if (array_key_exists('array', $val) && $val['array'] && count($this->data[$key])) {
+                if (array_key_exists('array', $val) && $val['array'] && is_array($this->data[$key])) {
                     foreach ($this->data[$key] as $item) {
                         if (!(is_a($item, 'Plexo\\Sdk\\Models\\'.$val['class']))) {
                             array_push($errors, [

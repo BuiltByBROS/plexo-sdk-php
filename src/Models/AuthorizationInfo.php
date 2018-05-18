@@ -21,8 +21,13 @@ class AuthorizationInfo extends ModelsBase
             ],
             'Type' => [
                 'type' => 'int',
-                'required' => false,
+                'required' => true,
             ],
         ];
+    }
+
+    public function toArray($canonize = false)
+    {
+        return $this->data;
     }
 }

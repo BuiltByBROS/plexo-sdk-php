@@ -18,10 +18,12 @@ function array_filter_recursive($input, $canonize = false)
 
 function ksortRecursive(&$array)
 {
-    if (!is_array($array) || key($array) === 0) {
+    if (!is_array($array)) {
         return false;
     }
-    ksort($array, SORT_REGULAR);
+    if (key($array) !== 0) {
+        ksort($array, SORT_REGULAR);
+    }
     foreach ($array as &$arr) {
         ksortRecursive($arr);
     }

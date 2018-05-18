@@ -1,71 +1,84 @@
 <?php
 namespace Plexo\Sdk\Models;
 
-class IssuerInfo
+class IssuerInfo extends ModelsBase
 {
     /**
-     *
-     * @var string
+     * @var string $Id;
+     * @var int $IssuerId;
+     * @var int $VariationId;
+     * @var string $Issuer;
+     * @var string $Bank;
+     * @var string $Variation;
+     * @var string $ImageUrl;
+     * @var bool $MayHaveAsyncPayments;
+     * @var bool $SupportsReserve;
+     * @var bool $MayHavePaymentsLimits;
+     * @var array List<FieldInfo> $Fields;
      */
-    public $Id;
 
-    /**
-     *
-     * @var int
-     */
-    public $IssuerId;
+    protected $data = [
+        'Id' => null,
+        'IssuerId' => null,
+        'VariationId' => null,
+        'Issuer' => null,
+        'Bank' => null,
+        'Variation' => null,
+        'ImageUrl' => null,
+        'MayHaveAsyncPayments' => null,
+        'SupportsReserve' => null,
+        'MayHavePaymentsLimits' => null,
+        'Fields' => null,
+    ];
 
-    /**
-     *
-     * @var int
-     */
-    public $VariationId;
-
-    /**
-     *
-     * @var string
-     */
-    public $Issuer;
-
-    /**
-     *
-     * @var string
-     */
-    public $Bank;
-
-    /**
-     *
-     * @var string
-     */
-    public $Variation;
-
-    /**
-     *
-     * @var string
-     */
-    public $ImageUrl;
-
-    /**
-     *
-     * @var bool
-     */
-    public $MayHaveAsyncPayments;
-
-    /**
-     *
-     * @var bool
-     */
-    public $SupportsReserve;
-
-    /**
-     *
-     * @var bool
-     */
-    public $MayHavePaymentsLimits;
-
-    /**
-     *
-     * @var array List<FieldInfo>
-     */
-    public $Fields;
+    public static function getValidationMetadata()
+    {
+        return [
+            'Id' => [
+                'type' => 'string',
+                'required' => false,
+            ],
+            'IssuerId' => [
+                'type' => 'int',
+                'required' => false,
+            ],
+            'VariationId' => [
+                'type' => 'int',
+                'required' => false,
+            ],
+            'Issuer' => [
+                'type' => 'string',
+                'array' => true,
+                'required' => false,
+            ],
+            'Bank' => [
+                'type' => 'string',
+                'required' => false,
+            ],
+            'Variation' => [
+                'type' => 'string',
+                'required' => false,
+            ],
+            'ImageUrl' => [
+                'type' => 'string',
+                'required' => false,
+            ],
+            'MayHaveAsyncPayments' => [
+                'type' => 'bool',
+                'required' => false,
+            ],
+            'SupportsReserve' => [
+                'type' => 'bool',
+                'required' => false,
+            ],
+            'MayHavePaymentsLimits' => [
+                'type' => 'bool',
+                'required' => false,
+            ],
+            'Fields' => [
+                'type' => 'array',
+                'required' => false,
+            ],
+        ];
+    }
 }

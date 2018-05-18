@@ -71,6 +71,10 @@ class SignedMessage
                     'ResultCode' => $this->object->getCode(),
                     'ErrorMessage' => $this->object->getMessage(),
                 ];
+            } elseif (is_array($this->object)) {
+                $sorted_array = $this->object;
+                Utilities\functions\ksortRecursive($sorted_array);
+                $arr['Object']['Object'] = $sorted_array;
             } else {
                 $object = [
                     'Client' => $this->client,
@@ -152,7 +156,7 @@ class SignedMessage
             $cert = Certificate\Certificate::fromServerPublicKey($response['Key'], null, $response['Fingerprint']);
         }
         if (!$this->verify($cert)) {
-            throw new Exception\SignatureException('Firma inválida');
+            throw new Exception\SignatureException('Firma inválida ('. openssl_error_string() .')');
         }
     }
 

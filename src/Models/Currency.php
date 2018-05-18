@@ -1,29 +1,41 @@
 <?php
 namespace Plexo\Sdk\Models;
 
-class Currency
+class Currency extends ModelsBase
 {
     /**
-     *
-     * @var int
+     * @var int $CurrencyId;
+     * @var string $Name;
+     * @var string $Plural;
+     * @var string $Symbol;
      */
-    public $CurrencyId;
 
-    /**
-     *
-     * @var string
-     */
-    public $Name;
+    protected $data = [
+        'CurrencyId' => null,
+        'Name' => null,
+        'Plural' => null,
+        'Symbol' => null,
+    ];
 
-    /**
-     *
-     * @var string
-     */
-    public $Plural;
-
-    /**
-     *
-     * @var string
-     */
-    public $Symbol;
+    public static function getValidationMetadata()
+    {
+        return [
+            'CurrencyId' => [
+                'type' => 'int',
+                'required' => false,
+            ],
+            'Name' => [
+                'type' => 'string',
+                'required' => false,
+            ],
+            'Plural' => [
+                'type' => 'string',
+                'required' => false,
+            ],
+            'Symbol' => [
+                'type' => 'string',
+                'required' => false,
+            ],
+        ];
+    }
 }
