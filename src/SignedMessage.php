@@ -151,7 +151,8 @@ class SignedMessage
             $cert = $certificateStore->getByFingerprint($this->fingerprint);
         }
         if (!$cert) {
-            $client = new Client();
+            $clientConfig = Registry::contains('ClientConfig') ? Registry::get('ClientConfig') : [];
+            $client = new Client($clientConfig);
             $response = $client->GetServerPublicKey($this->fingerprint);
             $cert = Certificate\Certificate::fromServerPublicKey($response['Key'], null, $response['Fingerprint']);
         }

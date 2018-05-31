@@ -5,7 +5,7 @@ use Psr\Log\NullLogger;
 
 class Client implements SecurePaymentGatewayInterface
 {
-    const VERSION = '0.4.0';
+    const VERSION = '0.4.2';
     const CREDENTIALS_FINGERPRINT     = 1;
     const CREDENTIALS_PEM_FINGERPRINT = 2;
     const CREDENTIALS_PFX_PASSPHRASE  = 3;
@@ -28,11 +28,6 @@ class Client implements SecurePaymentGatewayInterface
     {
         $this->configureDefaults($options);
         $this->setLogger($this->config['logger']);
-        if (!array_key_exists($this->config['env'], self::$env)) {
-            $error_message = sprintf("Entorno '%s' no válido. Los entornos disponibles son: 'prod' y 'test'.", $this->config['env']);
-            $this->logger->critical($error_message);
-            throw new Exception\ConfigurationException($error_message);
-        }
         $this->http_client = new \GuzzleHttp\Client([
             'base_uri' => $this->config['base_uri'] ? $this->config['base_uri'] : self::$env[$this->config['env']],
             'headers' => [
@@ -352,9 +347,10 @@ class Client implements SecurePaymentGatewayInterface
             'logger' => null,
             'base_uri' => null,
         ];
-        if (array_key_exists('base_uri', $config)) {
-            $config['base_uri'] = trim($config['base_uri'], '/') . '/';
+        if ($base_uri = getenv('PLEXO_ENDPOINT')) {
+            $defaults['base_uri'] = $base_uri;
         }
+        // @deprecated Environment variable PLEXO_ENV is deprecated
         if ($env = getenv('PLEXO_ENV')) {
             $defaults['env'] = $env;
         }
@@ -374,6 +370,15 @@ class Client implements SecurePaymentGatewayInterface
             $defaults['privkey_fingerprint'] = $privkey_fingerprint;
         }
         $this->config = $config + $defaults;
+        if (!$this->config['base_uri']) {
+            if (!array_key_exists($this->config['env'], self::$env)) {
+                $error_message = sprintf("Entorno '%s' no válido. Los entornos disponibles son: 'prod' y 'test'.", $this->config['env']);
+                $this->logger->critical($error_message);
+                throw new Exception\ConfigurationException($error_message);
+            }
+            $this->config['base_uri'] = self::$env[$this->config['env']];
+        }
+        $this->config['base_uri'] = trim($this->config['base_uri'], '/') . '/';
         if (isset($this->config['privkey_fingerprint'])) {
             $this->config['pkey'] = isset($this->config['pem_filename']) ? self::CREDENTIALS_FINGERPRINT : self::CREDENTIALS_PEM_FINGERPRINT;
         } elseif(isset($this->config['pfx_filename']) && isset($this->config['pfx_passphrase'])) {
