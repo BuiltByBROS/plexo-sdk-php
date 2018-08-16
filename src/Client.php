@@ -5,7 +5,7 @@ use Psr\Log\NullLogger;
 
 class Client implements SecurePaymentGatewayInterface
 {
-    const VERSION = '0.4.2';
+    const VERSION = '0.4.3';
     const CREDENTIALS_FINGERPRINT     = 1;
     const CREDENTIALS_PEM_FINGERPRINT = 2;
     const CREDENTIALS_PFX_PASSPHRASE  = 3;
@@ -54,7 +54,7 @@ class Client implements SecurePaymentGatewayInterface
 
     /**
      *
-     * @param (array|\Plexo\Sdk\Message\Authorization) $auth
+     * @param (array|\Plexo\Sdk\Models\Authorization) $auth
      * @return array
      * @throws \Exception
      */
@@ -64,14 +64,14 @@ class Client implements SecurePaymentGatewayInterface
             $auth = Models\Authorization::fromArray($auth);
         }
         if (!($auth instanceof Models\Authorization)) {
-            throw new Exception\PlexoException('$auth debe ser del tipo array o \Plexo\Sdk\Message\Authorization');// FIXME
+            throw new Exception\PlexoException('$auth debe ser del tipo array o \Plexo\Sdk\Models\Authorization');
         }
         return $this->_exec('POST', 'Auth', $auth);
     }
 
     /**
      *
-     * @param (array|\Plexo\Sdk\Message\PaymentRequest) $payment
+     * @param (array|\Plexo\Sdk\Models\PaymentRequest) $payment
      * @return \stdClass
      */
     public function Purchase($payment)
@@ -88,10 +88,10 @@ class Client implements SecurePaymentGatewayInterface
     public function Cancel($payment)
     {
         if (is_array($payment)) {
-            $payment = new Message\CancelRequest($payment);
+            $payment = Models\CancelRequest::fromArray($payment);
         }
-        if (!($payment instanceof Message\CancelRequest)) {
-            throw new \Exception('$payment debe ser del tipo array o \Plexo\Sdk\Message\CancelRequest');// FIXME
+        if (!($payment instanceof Models\CancelRequest)) {
+            throw new \Exception('$payment debe ser del tipo array o \Plexo\Sdk\Models\CancelRequest');
         }
         return $this->_exec('POST', 'Operation/Cancel', $payment);
     }
@@ -134,11 +134,10 @@ class Client implements SecurePaymentGatewayInterface
         return $this->_exec('POST', 'Instruments', $info);
     }
 
-    //Task<ServerSignedResponse> DeleteInstrument(ClientSignedRequest<DeleteInstrumentRequest> info);
     public function DeleteInstrument($info)
     {
         if (is_array($info)) {
-            $info = new Message\DeleteInstrumentRequest($info);
+            $info = Models\DeleteInstrumentRequest::fromArray($info);
         }
         return $this->_exec('POST', 'Instruments/Delete', $info);
     }
@@ -288,7 +287,7 @@ class Client implements SecurePaymentGatewayInterface
 
     /**
      * @since 0.3.0
-     * @param (array|\Plexo\Sdk\Message\TransactionQuery) $query
+     * @param (array|\Plexo\Sdk\Models\TransactionQuery) $query
      * @return string
      * @throws Exception\PlexoException
      */

@@ -12,7 +12,7 @@ final class DeleteInstrumentRequestTest extends TestCase
         $deleteInstrumentRequest = Models\DeleteInstrumentRequest::fromArray([
             'InstrumentToken' => 'token',
             'MetaReference' => 'meta reference',
-            'Type' => Type\AuthorizationType::ANONYMOUS,
+            // 'Type' => Type\AuthorizationType::ANONYMOUS,
         ]);
         $this->assertEmpty($deleteInstrumentRequest->validate());
         return $deleteInstrumentRequest;
@@ -26,7 +26,7 @@ final class DeleteInstrumentRequestTest extends TestCase
         $signedRequest = new SignedRequest($deleteInstrumentRequest);
         $signedRequest->setClient('Prueba');
         $this->assertEquals(
-            '{"Fingerprint":"","Object":{"Client":"Prueba","Request":{"InstrumentToken":"token","MetaReference":"meta reference","Type":2}},"UTCUnixTimeExpiration":null}',
+            '{"Fingerprint":"","Object":{"Client":"Prueba","Request":{"InstrumentToken":"token","MetaReference":"meta reference","Type":0}},"UTCUnixTimeExpiration":null}',
             $signedRequest->getSignatureBaseString()
         );
     }

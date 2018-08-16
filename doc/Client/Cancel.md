@@ -11,8 +11,10 @@
     * CLIENT_PURCHASE_REFERENCE_ID
     * CLIENT_CANCEL_REFERENCE_ID
     * CLIENT_RESERVE_REFERENCE_ID
+    * CLIENT_REFUND_REFERENCE_ID
   * **ClientReferenceId** (string)
   * **MetaReference** (string)
+  * **OptionalClientId** (int)
 
 ## Ejemplo
 
