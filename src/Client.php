@@ -5,7 +5,7 @@ use Psr\Log\NullLogger;
 
 class Client implements SecurePaymentGatewayInterface
 {
-    const VERSION = '0.4.3';
+    const VERSION = '0.4.4';
     const CREDENTIALS_FINGERPRINT     = 1;
     const CREDENTIALS_PEM_FINGERPRINT = 2;
     const CREDENTIALS_PFX_PASSPHRASE  = 3;
@@ -16,7 +16,7 @@ class Client implements SecurePaymentGatewayInterface
     private $logger;
 
     private static $env = [
-        'test' => 'http://testing2.plexo.com.uy/plexoapi/SecurePaymentGateway.svc/',
+        'test' => 'https://testing.plexo.com.uy:4043/SecurePaymentGateway.svc/',
         'prod' => 'http://www.plexo.com.uy/plexoapi/SecurePaymentGateway.svc/',
     ];
 

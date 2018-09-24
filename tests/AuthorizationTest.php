@@ -20,6 +20,7 @@ final class AuthorizationTest extends TestCase
                 Type\FieldType::CELLPHONE => '555-123456',
                 new Type\FieldType(Type\FieldType::IDENTIFICATION_TYPE, Type\FieldType::IDENTIFICATION_TYPE_CI),
                 new Type\FieldType(Type\FieldType::IDENTIFICATION, '11111111'),
+                Type\FieldType::FIRST_NAME => 'Lía',
             ],
             'LimitIssuers' => ['a', 'b', 'c'],
             'MetaReference' => null,
@@ -38,7 +39,7 @@ final class AuthorizationTest extends TestCase
         $signedRequest->setClient('Prueba');
         $this->assertEmpty($authorization->validate());
         $this->assertEquals(
-            '{"Fingerprint":"","Object":{"Client":"Prueba","Request":{"Action":3,"ClientInformation":{"Cellphone":"555-123456","Identification":"11111111","IdentificationType":"0"},"DoNotUseCallback":false,"ExtendableInstrumentToken":"Token","LimitIssuers":["a","b","c"],"OptionalMetadata":"456","PromotionInfoIssuers":{"X":"1","Y":"2"},"RedirectUri":"https://example.net/ret","Type":2}},"UTCUnixTimeExpiration":null}',
+            '{"Fingerprint":"","Object":{"Client":"Prueba","Request":{"Action":3,"ClientInformation":{"Cellphone":"555-123456","FirstName":"Lía","Identification":"11111111","IdentificationType":"0"},"DoNotUseCallback":false,"ExtendableInstrumentToken":"Token","LimitIssuers":["a","b","c"],"OptionalMetadata":"456","PromotionInfoIssuers":{"X":"1","Y":"2"},"RedirectUri":"https://example.net/ret","Type":2}},"UTCUnixTimeExpiration":null}',
             $signedRequest->getSignatureBaseString()
         );
     }

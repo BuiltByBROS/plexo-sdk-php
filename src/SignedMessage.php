@@ -101,7 +101,7 @@ class SignedMessage
 //        $message['Object'] = Utilities\functions\array_filter_recursive($message['Object']);
         Utilities\functions\ksortRecursive($message['Object']);
         $json = json_encode($message['Object']);
-        $json = preg_replace_callback('/\\\\u([0-9a-f]+)/', 'Plexo\Sdk\Utilities\functions\replace_unicode_escape_sequence', $json);
+        $json = preg_replace_callback('/\\\\u([0-9a-f]{4})/', 'Plexo\Sdk\Utilities\functions\replace_unicode_escape_sequence', $json);
         $json = str_replace('\/', '/', $json);
         $json = preg_replace_callback('/":"float\((\d+)(\.(\d+))?\)"/', function ($matches) {
             return sprintf('":%d.%s', $matches[1], (array_key_exists(3, $matches) ? $matches[3] : 0));
