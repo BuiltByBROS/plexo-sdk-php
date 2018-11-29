@@ -30,4 +30,5 @@ abstract class ResultCode
     const REQUIRES_CLIENT_EXTENDED_AMOUNT                      = 24;
     const ALREADY_EXISTS                                       = 25;
     const MISSING_FIELDS                                       = 26;
+    const CODE_EXPIRED                                         = 27;
 }

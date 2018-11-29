@@ -15,6 +15,12 @@ class FinancialInclusion extends ModelsBase//implements PlexoModelInterface
     // public $InvoiceNumber = 0;
 
     /**
+     *
+     * @var string 
+     */
+    // public $InvoiceNumberStr
+
+    /**
      * @var float
      */
     // public $TaxedAmount = 0.0;
@@ -27,6 +33,7 @@ class FinancialInclusion extends ModelsBase//implements PlexoModelInterface
     protected $data = [
         'BilledAmount' => 0.0,
         'InvoiceNumber' => 0,
+        'InvoiceNumberStr' => null,
         'TaxedAmount' => 0.0,
         'Type' => 0,
     ];
@@ -53,6 +60,10 @@ class FinancialInclusion extends ModelsBase//implements PlexoModelInterface
                 'type' => 'int',
                 'required' => false,
             ],
+            'InvoiceNumberStr' => [
+                'type' => 'int',
+                'required' => false,
+            ],
             'TaxedAmount' => [
                 'type' => 'float',
                 'required' => false,
@@ -68,17 +79,19 @@ class FinancialInclusion extends ModelsBase//implements PlexoModelInterface
     {
         if ($canonize) {
             return [
-                'BilledAmount'  => is_null($this->BilledAmount)  ? null : sprintf('float(%s)', (float) $this->BilledAmount),
-                'InvoiceNumber' => is_null($this->InvoiceNumber) ? null : (int) $this->InvoiceNumber,
-                'TaxedAmount'   => is_null($this->TaxedAmount)   ? null : sprintf('float(%s)', (float) $this->TaxedAmount),
-                'Type'          => is_null($this->Type)          ? null : (int) $this->Type,
+                'BilledAmount'     => is_null($this->BilledAmount)     ? null : sprintf('float(%s)', (float) $this->BilledAmount),
+                'InvoiceNumber'    => is_null($this->InvoiceNumber)    ? null : (int) $this->InvoiceNumber,
+                'InvoiceNumberStr' => is_null($this->InvoiceNumberStr) ? null : (string) $this->InvoiceNumberStr,
+                'TaxedAmount'      => is_null($this->TaxedAmount)      ? null : sprintf('float(%s)', (float) $this->TaxedAmount),
+                'Type'             => is_null($this->Type)             ? null : (int) $this->Type,
             ];
         } else {
             return [
-                'BilledAmount'  => is_null($this->BilledAmount)  ? null : (float) $this->BilledAmount,
-                'InvoiceNumber' => is_null($this->InvoiceNumber) ? null : (int) $this->InvoiceNumber,
-                'TaxedAmount'   => is_null($this->TaxedAmount)   ? null : (float) $this->TaxedAmount,
-                'Type'          => is_null($this->Type)          ? null : (int) $this->Type,
+                'BilledAmount'     => is_null($this->BilledAmount)     ? null : (float) $this->BilledAmount,
+                'InvoiceNumber'    => is_null($this->InvoiceNumber)    ? null : (int) $this->InvoiceNumber,
+                'InvoiceNumberStr' => is_null($this->InvoiceNumberStr) ? null : (string) $this->InvoiceNumberStr,
+                'TaxedAmount'      => is_null($this->TaxedAmount)      ? null : (float) $this->TaxedAmount,
+                'Type'             => is_null($this->Type)             ? null : (int) $this->Type,
             ];
         }
     }

@@ -28,12 +28,21 @@ class FieldType {
     const SISTARBANK_PAYMENT_METHOD    = 0x501;
     const REDPAGOS_PRODUCT_NUMBER      = 0x502;
     const REDPAGOS_USER_ENABLED        = 0x503;
+    const VISA_NET_USER_ID               = 0x504;
+    const CARD_TYPE                      = 0x505;
+    const CARD_ISSUER                    = 0x506;
+    const CYBERSOURCE_DEVICE_FINGERPRINT = 0x507;
+    const CLIENT_IP                      = 0x508;
+    const INTEGER_ID                     = 0x509;
 
     // Commerce Related Information starts at 0x800
     const PROVIDER_COMMERCE_NUMBER     = 0x801;// This Could be the commerce id (Master/Oca/Visa/Etc)
     const OCA_TAXI_CODE                = 0x802;
     const TERMINAL_NUMBER              = 0x803;
     const POS_NUMBER                   = 0x804;
+    const PROVIDER_MERCHANT_ID                   = 0x805;
+    const PROVIDER_BRANCH_NUMBER                 = 0x806;
+    const COMMERCE_RESERVE_EXPIRATION_IN_SECONDS = 0x807;
 
     // Secure Information Starts at 0x8100. Private Flag | User Flag
     // Secure User Generic Information
@@ -72,10 +81,19 @@ class FieldType {
         0x501 => 'SistarBancPaymentMethod',
         'RedPagosProductNumber',
         'RedPagosUserEnabled',
+        'VisaNetUserId',
+        'CardType',
+        'CardIssuer',
+        'CybersourceDeviceFingerprint',
+        'ClientIP',
+        'IntegerId',
         0x801 => 'ProviderCommerceNumber',
         'OcaTaxiCode',
         'TerminalNumber',
         'PosNumber',
+        'ProviderMerchantId',
+        'ProviderBranchNumber',
+        'CommerceReserveExpirationInSeconds',
         0x8101 => 'Pan',
         'Token',
         'UniqueId',
