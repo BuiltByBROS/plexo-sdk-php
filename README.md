@@ -1,4 +1,4 @@
-# Plexo SDK para PHP - Versión 0.4.0
+# Plexo SDK para PHP
 
 [![Build Status](https://travis-ci.org/BuiltByBROS/plexo-sdk-php.svg?branch=master)](https://travis-ci.org/BuiltByBROS/plexo-sdk-php)
 
@@ -127,4 +127,5 @@ $client = new Sdk\Client([
 * [GetCommerceIssuers](doc/Client/GetCommerceIssuers.md)
 * [AddIssuerCommerce](doc/Client/AddIssuerCommerce.md)
 * [DeleteIssuerCommerce](doc/Client/DeleteIssuerCommerce.md)
+* [GetProvidedCodeCommerce](doc/Client/GetProvidedCodeCommerce.md)
 * [GetServerPublicKey](doc/Client/GetServerPublicKey.md)
