@@ -15,6 +15,7 @@ class PaymentRequest extends ModelsBase
      * @var float $TipAmount
      * @var int $OptionalCommerceId
      * @var string $OptionalMetadata
+     * @var string $OptionalProvidedCode
      */
     
     protected $data = [
@@ -25,6 +26,7 @@ class PaymentRequest extends ModelsBase
         'Items' => null,
         'OptionalCommerceId' => null,
         'OptionalMetadata' => null,
+        'OptionalProvidedCode' => null,
         'PaymentInstrumentInput' => null,
         'TipAmount' => null,
     ];
@@ -74,6 +76,10 @@ class PaymentRequest extends ModelsBase
                 'required' => false,
             ],
             'OptionalMetadata' => [
+                'type' => 'string',
+                'required' => false,
+            ],
+            'OptionalProvidedCode' => [
                 'type' => 'string',
                 'required' => false,
             ],
