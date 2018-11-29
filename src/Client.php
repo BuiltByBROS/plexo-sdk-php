@@ -265,6 +265,20 @@ class Client implements SecurePaymentGatewayInterface
         return $this->_exec('POST', 'Commerce/Issuer/Delete', $commerce);
     }
 
+    /**
+     *
+     * @param array $commerce
+     * @return \Plexo\Sdk\Models\Commerce
+     */
+    public function GetProvidedCodeCommerce($commerce)
+    {
+        if (is_array($commerce)) {
+            $commerce = Models\Commerce::fromArray($commerce);
+            $commerce->CommerceId = null;
+        }
+        return Models\Commerce::fromArray($this->_exec('POST', 'Commerce/GetProvidedCodeCommerce', $commerce));
+    }
+
     // TransactionInfo
 
     /**
