@@ -20,9 +20,15 @@ class PaymentInstrumentInput extends ModelsBase
      */
     // public $UseExtendedClientCreditIfAvailable = false;
 
+    /**
+     * @var Dictionary<FieldType,string> Optional
+     */
+    // public $OptionalInstrumentFields;
+
     protected $data = [
         'InstrumentToken' => null,
         'NonStorableItems' => [],
+        'OptionalInstrumentFields' => [],
         'UseExtendedClientCreditIfAvailable' => false,
     ];
 
@@ -43,6 +49,10 @@ class PaymentInstrumentInput extends ModelsBase
                 'required' => true,
             ],
             'NonStorableItems' => [
+                'type' => 'array',
+                'required' => false,
+            ],
+            'OptionalInstrumentFields' => [
                 'type' => 'array',
                 'required' => false,
             ],
@@ -81,11 +91,41 @@ class PaymentInstrumentInput extends ModelsBase
         return $hash;
     }
 
+    public function addOptionalInstrumentFields($value, $k = null)
+    {
+        array_push($this->data['OptionalInstrumentFields'], ($value instanceof Type\FieldType ? $value : new Type\FieldType($k, $value)));
+        return $this;
+    }
+
+    public function setOptionalInstrumentFields(array $value)
+    {
+
+        $this->data['OptionalInstrumentFields'] = [];
+        foreach ($value as $k => $item) {
+            $this->addOptionalInstrumentFields($item, $k);
+        }
+        return $this;
+    }
+
+    public function optionalInstrumentFieldsToArray()
+    {
+        if (count($this->data['OptionalInstrumentFields']) === 0) {
+            return null;
+        }
+        $hash = [];
+        foreach ($this->data['OptionalInstrumentFields'] as $item) {
+            $hash[$item->getParamName()] = $item->getValue();
+        }
+        ksort($hash);
+        return $hash;
+    }
+
     public function toArray($canonize = false)
     {
         return [
             'InstrumentToken' => $this->data['InstrumentToken'],
             'NonStorableItems' => $this->nonStorableItemsToArray(),
+            'OptionalInstrumentFields' => $this->optionalInstrumentFieldsToArray(),
             'UseExtendedClientCreditIfAvailable' => $this->data['UseExtendedClientCreditIfAvailable'],
         ];
     }

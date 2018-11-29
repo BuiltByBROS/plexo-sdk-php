@@ -55,6 +55,11 @@ final class PaymentRequestTest extends TestCase
                     Type\FieldType::EMAIL => 'mail@example.net',
                     new Type\FieldType(Type\FieldType::FIRST_NAME, 'Pepe'),
                 ],
+                'OptionalInstrumentFields' => [
+                    'Name' => 'Nombre',
+                    Type\FieldType::EMAIL => 'mail@example.net',
+                    new Type\FieldType(Type\FieldType::FIRST_NAME, 'Pepe'),
+                ],
             ],
         ];
     }
@@ -100,6 +105,7 @@ final class PaymentRequestTest extends TestCase
                   '"PaymentInstrumentInput":{'.
                     '"InstrumentToken":"0123456789ABCDEF0123456789ABCDEF",'.
                     '"NonStorableItems":{"Email":"mail@example.net","FirstName":"Pepe","Name":"Nombre"},'.
+                    '"OptionalInstrumentFields":{"Email":"mail@example.net","FirstName":"Pepe","Name":"Nombre"},'.
                     '"UseExtendedClientCreditIfAvailable":true'.
                   '}'.
                 '}'.
