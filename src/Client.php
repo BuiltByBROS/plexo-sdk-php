@@ -5,11 +5,11 @@ use Psr\Log\NullLogger;
 
 class Client implements SecurePaymentGatewayInterface
 {
-    const VERSION = '0.5.0';
+    const VERSION = '0.6.0';
     const CREDENTIALS_FINGERPRINT     = 1;
     const CREDENTIALS_PEM_FINGERPRINT = 2;
     const CREDENTIALS_PFX_PASSPHRASE  = 3;
-    
+
     private $http_client;
     private $config;
     private $serverCert;
@@ -97,6 +97,21 @@ class Client implements SecurePaymentGatewayInterface
     }
 
     /**
+     * @since 0.6.0
+     * @return \Plexo\Sdk\Models\Transaction
+     */
+    public function Refund($payment)
+    {
+        if (is_array($payment)) {
+            $payment = Models\RefundRequest::fromArray($payment);
+        }
+        if (!($payment instanceof Models\RefundRequest)) {
+            throw new \Exception('$payment debe ser del tipo array o \Plexo\Sdk\Models\RefundRequest');
+        }
+        return new Models\Transaction($this->_exec('POST', 'Operation/Refund', $payment));
+    }
+
+    /**
      * @param array $payment
      * @return \Plexo\Sdk\Models\Transaction
      */
@@ -122,6 +137,43 @@ class Client implements SecurePaymentGatewayInterface
             $payment = new Message\Reserve($payment);
         }
         return $this->_exec('POST', 'Operation/Status', $payment);
+    }
+
+    // Blacklist
+
+    /**
+     * @since 0.6.0
+     * @return null
+     */
+    public function BlackListAdd($request)
+    {
+        if (is_array($request)) {
+            $request = Models\BlacklistRequest::fromArray($request);
+        }
+        return $this->_exec('POST', 'Blacklist/Add', $request);
+    }
+
+    /**
+     * @since 0.6.0
+     * @return null
+     */
+    public function BlackListDelete($request)
+    {
+        if (is_array($request)) {
+            $request = Models\BlacklistRequest::fromArray($request);
+        }
+        return $this->_exec('POST', 'Blacklist/Delete', $request);
+    }
+
+    /**
+     * @since 0.6.0
+     * @return Plexo\Sdk\Models\BlacklistRequest[]
+     */
+    public function GetBlackList()
+    {
+        return array_map(function($item) {
+            return Models\BlacklistRequest::fromArray($item);
+        }, $this->_exec('POST', 'Blacklist'));
     }
 
     // Instruments
@@ -165,7 +217,6 @@ class Client implements SecurePaymentGatewayInterface
     // Commerces
 
     /**
-     * 
      * @return array
      */
     public function GetCommerces()
@@ -177,7 +228,6 @@ class Client implements SecurePaymentGatewayInterface
     }
 
     /**
-     * 
      * @param array $commerce
      * @return \Plexo\Sdk\Models\Commerce
      */
@@ -191,7 +241,6 @@ class Client implements SecurePaymentGatewayInterface
     }
 
     /**
-     * 
      * @param array $commerce
      * @return \Plexo\Sdk\Models\Commerce
      */
@@ -204,7 +253,6 @@ class Client implements SecurePaymentGatewayInterface
     }
 
     /**
-     * 
      * @param array $commerce
      * @return void
      */
@@ -218,7 +266,6 @@ class Client implements SecurePaymentGatewayInterface
     }
 
     /**
-     * 
      * @param array $commerce
      * @return void
      */
@@ -252,7 +299,6 @@ class Client implements SecurePaymentGatewayInterface
     }
 
     /**
-     * 
      * @param array $commerce
      * @return void
      */
@@ -296,7 +342,7 @@ class Client implements SecurePaymentGatewayInterface
             throw new Exception\PlexoException('$query debe ser del tipo array o \Plexo\Sdk\Models\TransactionQuery');// FIXME
         }
         return $this->_exec('POST', 'Transactions', $query);
-//        return new Models\TransactionCursor($this->_exec('POST', 'Transactions', $query));
+        // return new Models\TransactionCursor($this->_exec('POST', 'Transactions', $query));
     }
 
     /**
@@ -348,8 +394,24 @@ class Client implements SecurePaymentGatewayInterface
         if (!($request instanceof Models\CodeRequest)) {
             throw new Exception\PlexoException('$query debe ser del tipo array o \Plexo\Sdk\Models\CodeRequest');// FIXME
         }
-        // new Transaction
-        return $this->_exec('POST', 'Code', $request);
+        return new Models\Transaction($this->_exec('POST', 'Code', new IssuerSignedRequest($request)));
+    }
+    // Task<ServerSignedResponse<Transaction>> CodeAction(IssuerSignedRequest<CodeRequest> request);
+
+    /**
+     * @since 0.6.0
+     */
+    public function get($path, $request)
+    {
+        return $this->_exec('GET', $path, $request);
+    }
+
+    /**
+     * @since 0.6.0
+     */
+    public function post($path, $request = null)
+    {
+        return $this->_exec('POST', $path, $request);
     }
 
     private function configureDefaults(array $config)
@@ -408,6 +470,15 @@ class Client implements SecurePaymentGatewayInterface
         return $this->config['client'];
     }
 
+    private function _getIssuerName()
+    {
+        if (!array_key_exists('issuer', $this->config) || empty($this->config['issuer'])) {
+            throw new Exception\ResultCodeException('You must provide a valid issuer name', ResultCode::ARGUMENT_ERROR);
+        }
+        $this->logger->info('Using issuer ', array('issuer' => $this->config['issuer']));
+        return $this->config['issuer'];
+    }
+
     /**
      *
      * @param string $http_method
@@ -425,7 +496,7 @@ class Client implements SecurePaymentGatewayInterface
                 $errors = $message->validate();
                 if (is_array($errors) && count($errors)) {
                     throw new Exception\InvalidArgumentException($errors[0]['error'] . ' in ' . $errors[0]['class']);
-                } 
+                }
             }
             $signedRequest = new SignedRequest($message);
             $signedRequest->setClient($this->_getClientName());
@@ -489,7 +560,7 @@ class Client implements SecurePaymentGatewayInterface
             case self::CREDENTIALS_PEM_FINGERPRINT:
                 if (!Registry::contains('CertificateProvider')) {
                     throw new Exception\ConfigurationException('No se ha registrado la clase \'CertificateProvider\'.');
-                } 
+                }
                 $certificateStore = Registry::get('CertificateProvider');
                 $cert = $certificateStore->getByFingerprint($this->config['privkey_fingerprint']);
                 break;

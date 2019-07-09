@@ -6,7 +6,7 @@ abstract class ModelsBase implements \ArrayAccess
     protected $data = [];
 
     /**
-     * 
+     *
      * @param array $params
      */
     public function __construct(array $params = []) {

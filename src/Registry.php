@@ -9,10 +9,10 @@ class Registry
      * @todo Evaluar uso de SplObjectStorage en lugar de array.
     */
     static private $_store = array();
-  
+
     /**
     * Agrega un objeto al registro
-    * 
+    *
     * Si no se especifica un nombre, se usa el nombre de la clase
     *
     * @param mixed $object El objeto a guardar
@@ -23,11 +23,11 @@ class Registry
     static public function add($object, $name = null) {
         $name = ($name && is_string($name)) ? $name : get_class($object);
         if (isset(self::$_store[$name])) {
-            throw new \PlexoException(sprintf("Ya existe un objeto registrado bajo el nombre '%s'.", $name));
+            throw new Exception\PlexoException(sprintf("Ya existe un objeto registrado bajo el nombre '%s'.", $name));
         }
         self::$_store[$name]= $object;
     }
-  
+
     /**
     * Obtener un objeto desde el registro
     *
@@ -41,7 +41,7 @@ class Registry
         }
         return self::$_store[$name];
     }
-  
+
     /**
     * Comprueba si un objeto se encuentra en el registro
     *
@@ -56,7 +56,7 @@ class Registry
             return false;
         }
     }
-  
+
     /**
     * Remover objeto del registro
     *
@@ -68,10 +68,10 @@ class Registry
             unset(self::$_store[$name]);
         }
     }
-    
+
     /**
      * Vacía el registro
-     * 
+     *
      */
     static public function clear() {
         foreach (self::$_store AS $obj) {

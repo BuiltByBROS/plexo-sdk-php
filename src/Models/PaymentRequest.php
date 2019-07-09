@@ -17,7 +17,7 @@ class PaymentRequest extends ModelsBase
      * @var string $OptionalMetadata
      * @var string $OptionalProvidedCode
      */
-    
+
     protected $data = [
         'ClientReferenceId' => null,
         'CurrencyId' => Type\CurrencyType::UYU,
@@ -33,9 +33,9 @@ class PaymentRequest extends ModelsBase
 
 //    public static function loadValidatorMetadata(\Symfony\Component\Validator\Mapping\ClassMetadata $metadata)
 //    {
-//        
+//
 //    }
-    
+
     public static function getValidationMetadata()
     {
         return [
