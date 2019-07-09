@@ -21,6 +21,18 @@ class FieldType {
     const LAST_NAME                    = 0x110;
     const CITY                         = 0x111;
 
+    // New OptionalFields
+    const COUNTRY               = 0x0201;
+    const SHIPPING_ADDRESS      = 0x0202;
+    const SHIPPING_ZIP_CODE     = 0x0203;
+    const SHIPPING_CITY         = 0x0204;
+    const SHIPPING_COUNTRY      = 0x0205;
+    const PROMOTIONAL_CODE      = 0x0206;
+    const COMMERCE_REFERENCE_ID = 0x0207;
+    const TRANSACTION_DATE_TIME = 0x0208;
+    const DEFERRED_MONTHS       = 0x0209;
+    const PLAN                  = 0x020A;
+
     // Provider Related Information starts at 0x400
     const PROVIDER                     = 0x401;// Example Visa
 
@@ -111,7 +123,7 @@ class FieldType {
     }
 
     /**
-     * 
+     *
      * @return int
      */
     public function getParam()
@@ -133,7 +145,7 @@ class FieldType {
     }
 
     /**
-     * 
+     *
      * @return string
      * @throws \Plexo\Sdk\Exception\InvalidArgumentException
      */
