@@ -396,23 +396,6 @@ class Client implements SecurePaymentGatewayInterface
         }
         return new Models\Transaction($this->_exec('POST', 'Code', new IssuerSignedRequest($request)));
     }
-    // Task<ServerSignedResponse<Transaction>> CodeAction(IssuerSignedRequest<CodeRequest> request);
-
-    /**
-     * @since 0.6.0
-     */
-    public function get($path, $request)
-    {
-        return $this->_exec('GET', $path, $request);
-    }
-
-    /**
-     * @since 0.6.0
-     */
-    public function post($path, $request = null)
-    {
-        return $this->_exec('POST', $path, $request);
-    }
 
     private function configureDefaults(array $config)
     {
@@ -492,13 +475,18 @@ class Client implements SecurePaymentGatewayInterface
     {
         $options = array();
         if ($http_method === 'POST') {
+            if ($message instanceof SignedMessage) {
+                $signedRequest = $message;
+                $message = $signedRequest->getMessage();
+            } else {
+                $signedRequest = new ClientSignedRequest($message);
+            }
             if (!is_null($message)) {
                 $errors = $message->validate();
                 if (is_array($errors) && count($errors)) {
                     throw new Exception\InvalidArgumentException($errors[0]['error'] . ' in ' . $errors[0]['class']);
                 }
             }
-            $signedRequest = new SignedRequest($message);
             $signedRequest->setClient($this->_getClientName());
             $cert = $this->getCert();
             $signedRequest->sign($cert);

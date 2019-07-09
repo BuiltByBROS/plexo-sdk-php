@@ -3,6 +3,7 @@ namespace Plexo\Sdk;
 
 class SignedMessage
 {
+    protected $auth_param = 'Client';
     protected $client;
     protected $fingerprint;
     protected $object;
@@ -10,14 +11,14 @@ class SignedMessage
     protected $signature;
 
     /**
-     * 
+     *
      * @param (Message|string) $message
      */
     public function __construct($message = null, $fingerprint = null, $utcUnixTimeExpiration = null, $signature = null)
     {
-        if (is_string($message)) {
-            $this->createFromString($message);
-        }
+        // if (is_string($message)) {
+        //     $this->createFromString($message);
+        // }
         $this->object = $message;
         $this->fingerprint = $fingerprint;
         $this->utcUnixTimeExpiration = $utcUnixTimeExpiration;
@@ -42,7 +43,7 @@ class SignedMessage
     }
 
     /**
-     * 
+     *
      * @param string $json
      * @return \self
      */
@@ -77,14 +78,14 @@ class SignedMessage
                 $arr['Object']['Object'] = $sorted_array;
             } else {
                 $object = [
-                    'Client' => $this->client,
+                    $this->auth_param => $this->client,
                     'Request' => is_array($this->object) ? $this->object : $this->object->toArray($canonize),
                 ];
                 $arr['Object']['Object'] = Utilities\functions\array_filter_recursive($object, $canonize);
             }
         } else {
             $arr['Object']['Object'] = [
-                'Client' => $this->client,
+                $this->auth_param => $this->client,
             ];
         }
         return $arr;
