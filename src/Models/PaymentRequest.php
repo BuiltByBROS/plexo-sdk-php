@@ -8,7 +8,7 @@ class PaymentRequest extends ModelsBase
     /**
      * @var string $ClientReferenceId
      * @var PaymentInstrumentInput $PaymentInstrumentInput
-     * @var List<Item> $Items
+     * @var Item[] $Items
      * @var int $CurrencyId
      * @var int $Installments
      * @var FinancialInclusion $FinancialInclusion
@@ -16,6 +16,7 @@ class PaymentRequest extends ModelsBase
      * @var int $OptionalCommerceId
      * @var string $OptionalMetadata
      * @var string $OptionalProvidedCode
+     * @var string $OptionalExternalPaymentInfo
      */
 
     protected $data = [
@@ -25,6 +26,7 @@ class PaymentRequest extends ModelsBase
         'Installments' => 0,
         'Items' => null,
         'OptionalCommerceId' => null,
+        'OptionalExternalPaymentInfo' => null,
         'OptionalMetadata' => null,
         'OptionalProvidedCode' => null,
         'PaymentInstrumentInput' => null,
@@ -73,6 +75,10 @@ class PaymentRequest extends ModelsBase
             ],
             'OptionalCommerceId' => [
                 'type' => 'int',
+                'required' => false,
+            ],
+            'OptionalExternalPaymentInfo' => [
+                'type' => 'string',
                 'required' => false,
             ],
             'OptionalMetadata' => [
