@@ -47,7 +47,7 @@ $priv = $certificateProvider->getSigningCert();
 $signedResponse->sign($priv);
 
 header("Content-Type: application/json; charset=UTF-8");
-echo $signedResponse
+echo $signedResponse;
 
 ?>
 ```
