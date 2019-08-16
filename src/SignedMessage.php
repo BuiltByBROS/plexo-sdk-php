@@ -49,6 +49,7 @@ class SignedMessage
      */
     public static function fromJson($json)
     {
+        $json = str_replace('{}', '{"__sdkEmptyMap":1}', $json);
         $signed_json = json_decode($json, true);
         $signature = $signed_json['Signature'];
         $fingerprint = $signed_json['Object']['Fingerprint'];
@@ -79,7 +80,7 @@ class SignedMessage
             } else {
                 $object = [
                     $this->auth_param => $this->client,
-                    'Request' => is_array($this->object) ? $this->object : $this->object->toArray($canonize),
+                    'Request' => $this->object->toArray($canonize),
                 ];
                 $arr['Object']['Object'] = Utilities\functions\array_filter_recursive($object, $canonize);
             }
@@ -101,12 +102,11 @@ class SignedMessage
         $message = $this->toArray(true);
 //        $message['Object'] = Utilities\functions\array_filter_recursive($message['Object']);
         Utilities\functions\ksortRecursive($message['Object']);
-        $json = json_encode($message['Object']);
-        $json = preg_replace_callback('/\\\\u([0-9a-f]{4})/', 'Plexo\Sdk\Utilities\functions\replace_unicode_escape_sequence', $json);
-        $json = str_replace('\/', '/', $json);
+        $json = json_encode($message['Object'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         $json = preg_replace_callback('/":"float\((\d+)(\.(\d+))?\)"/', function ($matches) {
             return sprintf('":%d.%s', $matches[1], (array_key_exists(3, $matches) ? $matches[3] : 0));
         }, $json);
+        $json = str_replace('{"__sdkEmptyMap":1}', '{}', $json);
         return $json;
     }
 

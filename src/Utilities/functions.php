@@ -29,8 +29,3 @@ function ksortRecursive(&$array)
     }
     return true;
 }
-
-function replace_unicode_escape_sequence($match)
-{
-    return mb_convert_encoding(pack('H*', $match[1]), 'UTF-8', 'UCS-2BE');
-}
