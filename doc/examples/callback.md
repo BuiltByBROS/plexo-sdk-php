@@ -34,7 +34,7 @@ try {
         'Client' => $message['Client'],
         'ResultCode' => 0,
     ]);
-} catch (Sdk\PlexoException $exc) {
+} catch (Sdk\Exception\PlexoException $exc) {
     $signedResponse = new Sdk\ClientSignedResponse($exc);
     $signedResponse->setClient($message['Client']);
 } catch (\Exception $exc) {
